@@ -8,6 +8,11 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,css}": [
+      "prettier --write"
+    ]
+  },
   "dependencies": {
     "next": "15.3.4",
     "react": "^19.0.0",
