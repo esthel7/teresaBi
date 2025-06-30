@@ -1,0 +1,75 @@
+.designer {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.designerSection {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.title {
+  padding-top: 2rem;
+  padding-bottom: 1rem;
+}
+
+.dataBox {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-left: auto;
+  margin-right: auto;
+  gap: 2rem;
+}
+
+.dataItem {
+  flex: 1;
+  border: 1px solid blue;
+  padding: 2rem;
+  background-color: antiquewhite;
+  cursor: pointer;
+}
+
+.dataSourceSearch {
+  border: 1px solid black;
+}
+
+.dataSourceList {
+  border: 1px solid black;
+  padding: 0.5rem;
+}
+
+.modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.modalItem {
+  background-color: white;
+  position: absolute;
+  width: 80%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
+}
+
+.modalBottom {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modalBottomRight {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
