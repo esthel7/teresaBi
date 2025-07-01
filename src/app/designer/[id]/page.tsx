@@ -1,10 +1,11 @@
 'use client';
 
 import { ChangeEvent, useRef, useState, MouseEvent } from 'react';
-import { Mosaic, MosaicWindow, MosaicNode } from 'react-mosaic-component';
+import { MosaicNode } from 'react-mosaic-component';
 import * as XLSX from 'xlsx';
 import distyles from './designerId.module.css';
 import 'react-mosaic-component/react-mosaic-component.css';
+import Chart from './Chart';
 
 export default function Home() {
   const inventory = useRef<Record<string, number>>({});
@@ -94,36 +95,6 @@ export default function Home() {
     const second = buildMosaicNode(views.slice(mid), !horizontal);
     if (!first || !second) return (first || second)!;
     return { direction: horizontal ? 'row' : 'column', first, second };
-  }
-
-  function removeMosaicNode(
-    node: MosaicNode<string> | null,
-    removeId: string
-  ): MosaicNode<string> | null {
-    if (!node) return null;
-    if (typeof node === 'string') return node === removeId ? null : node;
-    const first = removeMosaicNode(node.first, removeId);
-    const second = removeMosaicNode(node.second, removeId);
-    if (!first && !second) return null;
-    if (!first || !second) return (first || second)!;
-    return {
-      ...node,
-      first,
-      second
-    };
-  }
-
-  function removeMosaic(removeId: string) {
-    setChartCnt(prev => prev - 1);
-    setChartViews(chartViews.filter(id => id !== removeId));
-    setMosaicValue(removeMosaicNode(mosaicValue, removeId));
-    setMosaicProperty(null);
-    setMosaicPropertyDetail(true);
-  }
-
-  function openProperty(e: MouseEvent<HTMLDivElement>, settingId: string) {
-    setMosaicProperty(settingId);
-    e.stopPropagation();
   }
 
   function onBlur() {
@@ -228,55 +199,16 @@ export default function Home() {
               </div>
             ) : (
               <div className={distyles.area}>
-                <Mosaic<string>
-                  renderTile={(id, path) => (
-                    <MosaicWindow<string>
-                      key={`${id}-${path.join('-')}`}
-                      path={path}
-                      title={'-'}
-                      className={
-                        mosaicProperty === id ? '' : 'hide-mosaic-header'
-                      }
-                    >
-                      <div
-                        className={distyles.chart}
-                        onClick={e => openProperty(e, id)}
-                      >
-                        {id} 내용
-                        {mosaicProperty === id ? (
-                          <div className={distyles.chartPropertyBox}>
-                            <div
-                              className={distyles.chartPropertyItem}
-                              onClick={() =>
-                                setMosaicPropertyDetail(!mosaicPropertyDetail)
-                              }
-                            >
-                              길이조절
-                            </div>
-                            {mosaicPropertyDetail ? (
-                              <>
-                                <div
-                                  className={distyles.chartPropertyItem}
-                                  onClick={() => {}}
-                                >
-                                  데이터 연결
-                                </div>
-                                <div
-                                  className={distyles.chartPropertyItem}
-                                  onClick={() => removeMosaic(id)}
-                                >
-                                  X
-                                </div>
-                              </>
-                            ) : null}
-                          </div>
-                        ) : null}
-                      </div>
-                    </MosaicWindow>
-                  )}
-                  value={mosaicValue}
-                  onChange={setMosaicValue}
-                  className=""
+                <Chart
+                  setChartCnt={setChartCnt}
+                  chartViews={chartViews}
+                  setChartViews={setChartViews}
+                  mosaicValue={mosaicValue}
+                  setMosaicValue={setMosaicValue}
+                  mosaicProperty={mosaicProperty}
+                  setMosaicProperty={setMosaicProperty}
+                  mosaicPropertyDetail={mosaicPropertyDetail}
+                  setMosaicPropertyDetail={setMosaicPropertyDetail}
                 />
               </div>
             )}
