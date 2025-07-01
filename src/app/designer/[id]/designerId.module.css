@@ -1,0 +1,47 @@
+.designer {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  border: 1px solid black;
+}
+
+.sideBar {
+  width: 6rem;
+  border-right: 1px solid black;
+}
+
+.sideBarTitle {
+  text-align: center;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  background-color: antiquewhite;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+}
+
+.sideBarItem {
+  cursor: pointer;
+}
+
+.sideBarItem:hover {
+  background-color: antiquewhite;
+}
+
+.main {
+  width: 100%;
+}
+
+.topBar {
+  height: 3rem;
+  display: flex;
+  border-bottom: 1px solid black;
+  width: 100%;
+}
+
+.topBar > div {
+  display: flex;
+  border-left: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
