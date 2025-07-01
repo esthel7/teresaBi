@@ -3,6 +3,12 @@
   height: 100vh;
   display: flex;
   border: 1px solid black;
+
+  /* prevent text drag */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .sideBar {
@@ -54,6 +60,7 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  background-color: floralwhite;
 }
 
 .dashboardTop {
@@ -74,14 +81,64 @@
 
 .dashboard {
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .explain {
   margin: auto;
+}
 
-  /* prevent text drag */
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+.area {
+  height: 100%;
+}
+
+.chart {
+  height: 100%;
+  position: relative;
+}
+
+.chartPropertyBox {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  background-color: black;
+  color: white;
+}
+
+.chartPropertyItem {
+  cursor: pointer;
+}
+
+.mosaicHidden {
+  display: none;
+  background-color: red;
+}
+
+/* MosaicWindow header */
+:global(.mosaic-window) {
+  overflow: visible !important;
+}
+
+:global(.mosaic-window-controls) {
+  display: none !important;
+}
+
+:global(.mosaic-window-toolbar) {
+  position: absolute !important;
+  width: fit-content;
+  top: -0.5rem;
+  left: 50%;
+  padding-right: 15px;
+  transform: translateX(-50%);
+  background-color: black !important;
+  color: white;
+}
+
+:global(.hide-mosaic-header .mosaic-window-toolbar) {
+  display: none !important;
 }
