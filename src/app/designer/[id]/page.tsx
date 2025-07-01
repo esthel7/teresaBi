@@ -1,12 +1,14 @@
 'use client';
 
-import { ChangeEvent, useRef } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import * as XLSX from 'xlsx';
 import distyles from './designerId.module.css';
 
 export default function Home() {
   const inventory = useRef<Record<string, number>>({});
   const originalDataSource = useRef<(string | number)[][]>([]);
+  const [dashboardTitle] = useState('새 대시보드');
+  const [chartView] = useState(0);
 
   function formatCell(value: unknown) {
     if (!isNaN(Number(value)) && typeof value === 'string')
@@ -108,7 +110,24 @@ export default function Home() {
             <div>픽셀</div>
           </div>
         </div>
-        <div>hi</div>
+        <div className={distyles.dashboardBox}>
+          <div className={distyles.dashboardTop}>
+            <div className={distyles.dashboardTitle}>{dashboardTitle}</div>
+            <div className={distyles.share}>공유</div>
+          </div>
+          <div
+            className={distyles.dashboard}
+            style={{ display: chartView ? 'table' : 'flex' }}
+          >
+            {!chartView ? (
+              <div className={distyles.explain}>
+                도구 상자에서 버튼을 클릭하여 새 항목을 만듭니다.
+              </div>
+            ) : (
+              <div>chart</div>
+            )}
+          </div>
+        </div>
       </main>
     </div>
   );
