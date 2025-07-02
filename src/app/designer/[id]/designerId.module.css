@@ -167,6 +167,11 @@
   background-color: floralwhite;
 }
 
+.selectedData {
+  display: flex;
+  justify-content: space-between;
+}
+
 .propertyDetail {
   position: absolute;
   top: 0;
@@ -194,8 +199,25 @@
   word-break: break-all;
 }
 
-.propertyDetail .drawer:hover {
-  background-color: cornsilk;
+.dataBox {
+  border: 0.5px solid black;
+  margin: 0.5rem;
+}
+
+.dataBox .header {
+  border: 0.5px solid black;
+  height: 2rem;
+}
+
+.dataBox .dataItem {
+  display: flex;
+  justify-content: space-between;
+  border: 0.5px solid black;
+  cursor: pointer;
+}
+
+.dataBox .dataItem:hover {
+  background-color: gainsboro;
 }
 
 /* MosaicWindow header */

@@ -30,18 +30,37 @@ export default function ChartType({
   openDataProperty,
   setOpenDataProperty
 }: ChartTypeParameter) {
+  const [xInventory, setXInventory] = useState<string[][]>([]);
+  const [yInventory, setYInventory] = useState<string[][]>([]);
+  const [seriesInventory, setSeriesInventory] = useState<string[][]>([]);
   const [xDetail, setXDetail] = useState(false);
   const [yDetail, setYDetail] = useState(false);
   const [seriesDetail, setSeriesDetail] = useState(false);
-
-  console.log(originalDataSource, inventoryFormat);
+  const [selectData, setSelectData] = useState<string | null>(null);
 
   useEffect(() => {
     if (openDataProperty) return;
     setXDetail(false);
     setYDetail(false);
     setSeriesDetail(false);
+    setSelectData(null);
   }, [openDataProperty]);
+
+  useEffect(() => {
+    if (!selectData) return;
+    if (xDetail) {
+      // realname, alias
+      setXInventory(prev => [...prev, [selectData, selectData]]);
+    } else if (yDetail) {
+      // realname, alias, calculateType
+      setYInventory(prev => [...prev, [selectData, selectData, '합계']]);
+    } else if (seriesDetail) {
+      // realname, alias
+      setSeriesInventory(prev => [...prev, [selectData, selectData]]);
+    }
+    setSelectData(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectData]);
 
   function changeOpenDetailProperty(flag: NeededDataType) {
     setXDetail(false);
@@ -63,6 +82,37 @@ export default function ChartType({
     }
   }
 
+  function removeInventory(flag: NeededDataType, idx: number) {
+    const [selectedInventory, setSelectedInventory] =
+      flag === 'X'
+        ? [xInventory, setXInventory]
+        : flag === 'Y'
+          ? [yInventory, setYInventory]
+          : [seriesInventory, setSeriesInventory];
+    const left = selectedInventory.slice(0, idx);
+    const right = selectedInventory.slice(idx + 1);
+    setSelectedInventory([...left, ...right]);
+  }
+
+  function ViewAllData() {
+    const inventoryKeys = Object.keys(inventory.current);
+    return (
+      <div className={distyles.dataBox}>
+        <div className={distyles.header}>header</div>
+        {inventoryKeys.map(item => (
+          <div
+            key={item}
+            className={distyles.dataItem}
+            onClick={() => setSelectData(item)}
+          >
+            <div>{item}</div>
+            <div>{inventoryFormat.current[item]}</div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <>
       {mosaicProperty === mosaicId && openDataProperty ? (
@@ -78,6 +128,17 @@ export default function ChartType({
           </div>
           <div className={distyles.propertySection}>
             <h5>x축</h5>
+            {xInventory.map((item, idx) => (
+              <div
+                key={idx}
+                className={
+                  `${distyles.propertyOpenBox}` + ` ${distyles.selectedData}`
+                }
+              >
+                <div>{item[1]}</div>
+                <div onClick={() => removeInventory('X', idx)}>X</div>
+              </div>
+            ))}
             <div
               className={distyles.propertyOpenBox}
               onClick={() => changeOpenDetailProperty('X')}
@@ -87,6 +148,17 @@ export default function ChartType({
           </div>
           <div className={distyles.propertySection}>
             <h5>y축</h5>
+            {yInventory.map((item, idx) => (
+              <div
+                key={idx}
+                className={
+                  `${distyles.propertyOpenBox}` + ` ${distyles.selectedData}`
+                }
+              >
+                <div>{item[1]}</div>
+                <div onClick={() => removeInventory('Y', idx)}>X</div>
+              </div>
+            ))}
             <div
               className={distyles.propertyOpenBox}
               onClick={() => changeOpenDetailProperty('Y')}
@@ -96,6 +168,17 @@ export default function ChartType({
           </div>
           <div className={distyles.propertySection}>
             <h5>대분류</h5>
+            {seriesInventory.map((item, idx) => (
+              <div
+                key={idx}
+                className={
+                  `${distyles.propertyOpenBox}` + ` ${distyles.selectedData}`
+                }
+              >
+                <div>{item[1]}</div>
+                <div onClick={() => removeInventory('Series', idx)}>X</div>
+              </div>
+            ))}
             <div
               className={distyles.propertyOpenBox}
               onClick={() => changeOpenDetailProperty('Series')}
@@ -112,7 +195,7 @@ export default function ChartType({
           </div>
           <div className={distyles.drawer} style={{ borderTop: 'none' }}>
             <h5>데이터 선택</h5>
-            <div>{JSON.stringify(inventory.current)}</div>
+            <ViewAllData />
           </div>
           <div className={distyles.drawer}>
             <h5>데이터명 바꾸기</h5>
@@ -131,7 +214,7 @@ export default function ChartType({
           </div>
           <div className={distyles.drawer}>
             <h5>데이터 선택</h5>
-            <div>{JSON.stringify(inventory.current)}</div>
+            <ViewAllData />
             <h5>집계 방식 선택</h5>
             <div>합계, 카운트,...</div>
           </div>
@@ -151,7 +234,7 @@ export default function ChartType({
           </div>
           <div className={distyles.drawer} style={{ borderTop: 'none' }}>
             <h5>데이터 선택</h5>
-            <div>{JSON.stringify(inventory.current)}</div>
+            <ViewAllData />
           </div>
           <div className={distyles.drawer}>
             <h5>데이터명 바꾸기</h5>
