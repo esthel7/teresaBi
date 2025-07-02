@@ -220,6 +220,10 @@
   background-color: gainsboro;
 }
 
+.dataBox .dataItemSelect {
+  background-color: gainsboro;
+}
+
 /* MosaicWindow header */
 :global(.mosaic-window) {
   overflow: visible !important;
