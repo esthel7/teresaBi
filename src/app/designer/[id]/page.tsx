@@ -11,6 +11,9 @@ export default function Home() {
   const inventory = useRef<Record<string, number>>({});
   const originalDataSource = useRef<(string | number)[][]>([]);
   const [dashboardTitle] = useState('새 대시보드');
+  const [selectedChartType, setSelectedChartType] = useState<ChartType | null>(
+    null
+  );
   const [chartCnt, setChartCnt] = useState(0);
   const [chartViews, setChartViews] = useState<string[]>([]);
   const [mosaicValue, setMosaicValue] = useState<MosaicNode<string> | null>(
@@ -65,22 +68,12 @@ export default function Home() {
     const item = target.closest(`.${distyles.sideBarItem}`);
 
     if (item && item instanceof HTMLElement) {
-      const type = item.dataset.type;
+      const type = item.dataset.type as ChartType;
+      setSelectedChartType(type);
       setChartCnt(prev => prev + 1);
       const newChartViews = [...chartViews, `${type}-${String(Date.now())}`];
       setChartViews(newChartViews);
       setMosaicValue(buildMosaicNode(newChartViews));
-
-      switch (type) {
-        case 'grid':
-          // grid action
-          break;
-        case 'chart':
-          // chart action
-          break;
-        default:
-          break;
-      }
     }
   }
 
@@ -200,6 +193,9 @@ export default function Home() {
             ) : (
               <div className={distyles.area}>
                 <Chart
+                  inventory={inventory}
+                  originalDataSource={originalDataSource}
+                  selectedChartType={selectedChartType}
                   setChartCnt={setChartCnt}
                   chartViews={chartViews}
                   setChartViews={setChartViews}

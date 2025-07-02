@@ -98,6 +98,12 @@
   position: relative;
 }
 
+.connectData {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .chartPropertyBox {
   position: absolute;
   top: 0;
@@ -108,15 +114,79 @@
   gap: 0.3rem;
   background-color: black;
   color: white;
+  width: 5rem;
+  z-index: 5;
 }
 
 .chartPropertyItem {
   cursor: pointer;
 }
 
-.mosaicHidden {
-  display: none;
-  background-color: red;
+.openProperty {
+  position: absolute;
+  left: 5rem;
+  top: 0;
+  border: 1px solid black;
+  z-index: 10;
+  width: 10rem;
+}
+
+.openProperty .title {
+  border-bottom: 1px solid black;
+  display: flex;
+  justify-content: space-between;
+  height: 2rem;
+}
+
+.openProperty .close {
+  color: red;
+  cursor: pointer;
+}
+
+.propertySection {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  padding: 0.5rem;
+}
+
+.propertyOpenBox {
+  border: 1px solid black;
+  margin-top: 0.4rem;
+  border-radius: 0.4rem;
+  padding-left: 0.2rem;
+  cursor: pointer;
+}
+
+.propertyOpenBox:hover {
+  background-color: floralwhite;
+}
+
+.propertyDetail {
+  position: absolute;
+  top: 0;
+  left: 15rem;
+  border: 1px solid black;
+  z-index: 10;
+  width: 15rem;
+}
+
+.propertyDetail .header {
+  height: 2rem;
+  border-bottom: 1px solid black;
+}
+
+.propertyDetail .drawer {
+  border-top: 1px solid black;
+
+  /* text ellipsis */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  word-break: break-all;
+}
+
+.propertyDetail .drawer:hover {
+  background-color: cornsilk;
 }
 
 /* MosaicWindow header */

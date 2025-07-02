@@ -1,11 +1,22 @@
 'use client';
 
-import { Dispatch, SetStateAction, MouseEvent } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  MouseEvent,
+  useState,
+  useEffect,
+  RefObject
+} from 'react';
 import { Mosaic, MosaicWindow, MosaicNode } from 'react-mosaic-component';
-import distyles from './designerId.module.css';
 import 'react-mosaic-component/react-mosaic-component.css';
+import ChartType from './ChartType';
+import distyles from './designerId.module.css';
 
-interface ChartType {
+interface ChartParameter {
+  inventory: RefObject<Record<string, number>>;
+  originalDataSource: RefObject<(string | number)[][]>;
+  selectedChartType: ChartType | null;
   setChartCnt: Dispatch<SetStateAction<number>>;
   chartViews: string[];
   mosaicValue: MosaicNode<string> | null;
@@ -18,6 +29,9 @@ interface ChartType {
 }
 
 export default function Chart({
+  inventory,
+  originalDataSource,
+  selectedChartType,
   setChartCnt,
   chartViews,
   setChartViews,
@@ -27,7 +41,19 @@ export default function Chart({
   setMosaicProperty,
   mosaicPropertyDetail,
   setMosaicPropertyDetail
-}: ChartType) {
+}: ChartParameter) {
+  const [openDataProperty, setOpenDataProperty] = useState(false);
+
+  useEffect(() => {
+    if (!inventory.current.length) {
+      // redirect /designer after fetching data
+    }
+  }, [inventory]);
+
+  useEffect(() => {
+    setOpenDataProperty(false);
+  }, [mosaicProperty]);
+
   function removeMosaicNode(
     node: MosaicNode<string> | null,
     removeId: string
@@ -58,6 +84,16 @@ export default function Chart({
     e.stopPropagation();
   }
 
+  function openDataConnectSection(
+    e: MouseEvent<HTMLDivElement>,
+    settingId: string
+  ) {
+    setMosaicProperty(settingId);
+    setMosaicPropertyDetail(true);
+    setOpenDataProperty(true);
+    e.stopPropagation();
+  }
+
   return (
     <Mosaic<string>
       renderTile={(id, path) => (
@@ -68,7 +104,13 @@ export default function Chart({
           className={mosaicProperty === id ? '' : 'hide-mosaic-header'}
         >
           <div className={distyles.chart} onClick={e => openProperty(e, id)}>
-            {id} 내용
+            <div>{id.split('-')[0]}</div>
+            <div
+              className={distyles.connectData}
+              onClick={e => openDataConnectSection(e, id)}
+            >
+              데이터 연결
+            </div>
             {mosaicProperty === id ? (
               <div className={distyles.chartPropertyBox}>
                 <div
@@ -81,7 +123,7 @@ export default function Chart({
                   <>
                     <div
                       className={distyles.chartPropertyItem}
-                      onClick={() => {}}
+                      onClick={() => setOpenDataProperty(true)}
                     >
                       데이터 연결
                     </div>
@@ -94,6 +136,16 @@ export default function Chart({
                   </>
                 ) : null}
               </div>
+            ) : null}
+            {selectedChartType === 'chart' ? (
+              <ChartType
+                inventory={inventory}
+                originalDataSource={originalDataSource}
+                mosaicProperty={mosaicProperty}
+                mosaicId={id}
+                openDataProperty={openDataProperty}
+                setOpenDataProperty={setOpenDataProperty}
+              />
             ) : null}
           </div>
         </MosaicWindow>
