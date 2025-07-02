@@ -100,7 +100,7 @@ export default function Chart({
     <Mosaic<string>
       renderTile={(id, path) => (
         <MosaicWindow<string>
-          key={`${id}-${path.join('-')}`}
+          key={id}
           path={path}
           title={'-'}
           className={mosaicProperty === id ? '' : 'hide-mosaic-header'}
