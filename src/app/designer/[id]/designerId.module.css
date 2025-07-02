@@ -116,6 +116,9 @@
   color: white;
   width: 5rem;
   z-index: 5;
+  max-height: 100%;
+  height: fit-content;
+  overflow: auto;
 }
 
 .chartPropertyItem {
@@ -129,6 +132,9 @@
   border: 1px solid black;
   z-index: 10;
   width: 10rem;
+  max-height: 100%;
+  height: fit-content;
+  overflow: auto;
 }
 
 .openProperty .title {
@@ -168,6 +174,9 @@
   border: 1px solid black;
   z-index: 10;
   width: 15rem;
+  max-height: 100%;
+  height: fit-content;
+  overflow: auto;
 }
 
 .propertyDetail .header {
