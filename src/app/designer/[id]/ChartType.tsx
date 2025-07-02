@@ -5,7 +5,8 @@ import {
   SetStateAction,
   useState,
   useEffect,
-  RefObject
+  RefObject,
+  useRef
 } from 'react';
 import { NumberProperty } from '@/constants';
 import distyles from './designerId.module.css';
@@ -38,7 +39,7 @@ export default function ChartType({
   const [yDetail, setYDetail] = useState(false);
   const [seriesDetail, setSeriesDetail] = useState(false);
   const [selectData, setSelectData] = useState<string | null>(null);
-  const [selectDataIdx, setSelectDataIdx] = useState<number>(-1);
+  const selectDataIdx = useRef<number>(-1);
 
   useEffect(() => {
     if (openDataProperty) return;
@@ -46,7 +47,7 @@ export default function ChartType({
     setYDetail(false);
     setSeriesDetail(false);
     setSelectData(null);
-    setSelectDataIdx(-1);
+    selectDataIdx.current = -1;
   }, [openDataProperty]);
 
   function changeOpenDetailProperty(flag: NeededDataType) {
@@ -57,15 +58,15 @@ export default function ChartType({
     switch (flag) {
       case 'X':
         setXDetail(true);
-        setSelectDataIdx(xInventory.length);
+        selectDataIdx.current = xInventory.length;
         break;
       case 'Y':
         setYDetail(true);
-        setSelectDataIdx(yInventory.length);
+        selectDataIdx.current = yInventory.length;
         break;
       case 'Series':
         setSeriesDetail(true);
-        setSelectDataIdx(seriesInventory.length);
+        selectDataIdx.current = seriesInventory.length;
         break;
       default:
         console.error('error!');
@@ -84,18 +85,18 @@ export default function ChartType({
     const right = selectedInventory.slice(idx + 1);
     setSelectedInventory([...left, ...right]);
     setSelectData(null);
-    setSelectDataIdx(selectedInventory.length - 1);
+    selectDataIdx.current = selectedInventory.length - 1;
   }
 
-  function addInventory(item: string) {
+  function changeInventory(item: string) {
     setSelectData(item);
     const [selectedInventory, setSelectedInventory] = xDetail
       ? [xInventory, setXInventory]
       : yDetail
         ? [yInventory, setYInventory]
         : [seriesInventory, setSeriesInventory];
-    const left = selectedInventory.slice(0, selectDataIdx);
-    const right = selectedInventory.slice(selectDataIdx + 1);
+    const left = selectedInventory.slice(0, selectDataIdx.current);
+    const right = selectedInventory.slice(selectDataIdx.current + 1);
     const newValue: string[][] = [];
     if (xDetail) {
       // realname, alias
@@ -119,7 +120,7 @@ export default function ChartType({
           <div
             key={item}
             className={`${distyles.dataItem} ${item === selectData ? distyles.dataItemSelect : ''}`}
-            onClick={() => addInventory(item)}
+            onClick={() => changeInventory(item)}
           >
             <div>{item}</div>
             <div>{inventoryFormat.current[item]}</div>
@@ -127,6 +128,11 @@ export default function ChartType({
         ))}
       </div>
     );
+  }
+
+  function chooseThisInventory(item: string, idx: number) {
+    selectDataIdx.current = idx;
+    changeInventory(item);
   }
 
   return (
@@ -147,9 +153,8 @@ export default function ChartType({
             {xInventory.map((item, idx) => (
               <div
                 key={idx}
-                className={
-                  `${distyles.propertyOpenBox}` + ` ${distyles.selectedData}`
-                }
+                className={`${distyles.propertyOpenBox} ${distyles.selectedData} ${xDetail && selectDataIdx.current === idx ? distyles.selectedDataSelect : ''}`}
+                onClick={() => chooseThisInventory(item[0], idx)}
               >
                 <div>{item[1]}</div>
                 <div onClick={() => removeInventory('X', idx)}>X</div>
@@ -167,9 +172,8 @@ export default function ChartType({
             {yInventory.map((item, idx) => (
               <div
                 key={idx}
-                className={
-                  `${distyles.propertyOpenBox}` + ` ${distyles.selectedData}`
-                }
+                className={`${distyles.propertyOpenBox} ${distyles.selectedData} ${yDetail && selectDataIdx.current === idx ? distyles.selectedDataSelect : ''}`}
+                onClick={() => chooseThisInventory(item[0], idx)}
               >
                 <div>
                   {item[1]} ({item[2]})
@@ -189,9 +193,8 @@ export default function ChartType({
             {seriesInventory.map((item, idx) => (
               <div
                 key={idx}
-                className={
-                  `${distyles.propertyOpenBox}` + ` ${distyles.selectedData}`
-                }
+                className={`${distyles.propertyOpenBox} ${distyles.selectedData} ${seriesDetail && selectDataIdx.current === idx ? distyles.selectedDataSelect : ''}`}
+                onClick={() => chooseThisInventory(item[0], idx)}
               >
                 <div>{item[1]}</div>
                 <div onClick={() => removeInventory('Series', idx)}>X</div>

@@ -172,6 +172,10 @@
   justify-content: space-between;
 }
 
+.selectedDataSelect {
+  background-color: floralwhite;
+}
+
 .propertyDetail {
   position: absolute;
   top: 0;
