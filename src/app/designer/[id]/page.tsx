@@ -9,6 +9,7 @@ import Chart from './Chart';
 
 export default function Home() {
   const inventory = useRef<Record<string, number>>({});
+  const inventoryFormat = useRef<Record<string, string>>({});
   const originalDataSource = useRef<(string | number)[][]>([]);
   const [dashboardTitle] = useState('새 대시보드');
   const [selectedChartType, setSelectedChartType] = useState<ChartType | null>(
@@ -43,6 +44,7 @@ export default function Home() {
       const sheet = workbook.Sheets[sheetName];
 
       inventory.current = {};
+      inventoryFormat.current = {};
       const jsonData: (string | number)[][] = XLSX.utils.sheet_to_json(sheet, {
         header: 1,
         cellDates: true,
@@ -52,6 +54,14 @@ export default function Home() {
       const originalInventory = jsonData.shift() as string[];
       originalInventory.forEach((item, index) => {
         inventory.current[item] = index;
+        inventoryFormat.current[item] = /^\d{1,2}\/\d{1,2}\/\d{2}$/.test(
+          String(jsonData[0][index])
+        )
+          ? 'Date'
+          : !isNaN(Number(jsonData[0][index])) &&
+              typeof jsonData[0][index] === 'string'
+            ? 'number'
+            : typeof jsonData[0][index];
       });
       const refined = jsonData.map(row =>
         row.map(cell => formatCell(cell))
@@ -194,6 +204,7 @@ export default function Home() {
               <div className={distyles.area}>
                 <Chart
                   inventory={inventory}
+                  inventoryFormat={inventoryFormat}
                   originalDataSource={originalDataSource}
                   selectedChartType={selectedChartType}
                   setChartCnt={setChartCnt}

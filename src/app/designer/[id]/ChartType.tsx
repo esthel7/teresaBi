@@ -10,8 +10,10 @@ import {
 import distyles from './designerId.module.css';
 
 type NeededDataType = 'X' | 'Y' | 'Series';
+
 interface ChartTypeParameter {
   inventory: RefObject<Record<string, number>>;
+  inventoryFormat: RefObject<Record<string, string>>;
   originalDataSource: RefObject<(string | number)[][]>;
   mosaicProperty: string | null;
   mosaicId: string;
@@ -22,7 +24,7 @@ interface ChartTypeParameter {
 export default function ChartType({
   inventory,
   originalDataSource,
-  // inventoryFormats 필요
+  inventoryFormat,
   mosaicProperty,
   mosaicId,
   openDataProperty,
@@ -31,6 +33,8 @@ export default function ChartType({
   const [xDetail, setXDetail] = useState(false);
   const [yDetail, setYDetail] = useState(false);
   const [seriesDetail, setSeriesDetail] = useState(false);
+
+  console.log(originalDataSource, inventoryFormat);
 
   useEffect(() => {
     if (openDataProperty) return;

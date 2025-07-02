@@ -15,6 +15,7 @@ import distyles from './designerId.module.css';
 
 interface ChartParameter {
   inventory: RefObject<Record<string, number>>;
+  inventoryFormat: RefObject<Record<string, string>>;
   originalDataSource: RefObject<(string | number)[][]>;
   selectedChartType: ChartType | null;
   setChartCnt: Dispatch<SetStateAction<number>>;
@@ -31,6 +32,7 @@ interface ChartParameter {
 export default function Chart({
   inventory,
   originalDataSource,
+  inventoryFormat,
   selectedChartType,
   setChartCnt,
   chartViews,
@@ -140,6 +142,7 @@ export default function Chart({
             {selectedChartType === 'chart' ? (
               <ChartType
                 inventory={inventory}
+                inventoryFormat={inventoryFormat}
                 originalDataSource={originalDataSource}
                 mosaicProperty={mosaicProperty}
                 mosaicId={id}
