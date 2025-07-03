@@ -228,6 +228,14 @@
   background-color: gainsboro;
 }
 
+.drawType:hover {
+  background-color: aliceblue;
+}
+
+.drawTypeSelect {
+  background-color: aliceblue;
+}
+
 /* MosaicWindow header */
 :global(.mosaic-window) {
   overflow: visible !important;

@@ -5,13 +5,20 @@ import {
   SetStateAction,
   useState,
   useEffect,
-  RefObject,
-  useRef
+  RefObject
 } from 'react';
 import { NumberProperty } from '@/constants';
 import distyles from './designerId.module.css';
 
 type NeededDataType = 'X' | 'Y' | 'Series';
+const DrawType = [
+  'side-by-side bar',
+  'stack bar',
+  'full-stack bar',
+  'line',
+  'stack line',
+  'full-stack line'
+] as const;
 
 interface ChartTypeParameter {
   inventory: RefObject<Record<string, number>>;
@@ -39,7 +46,10 @@ export default function ChartType({
   const [yDetail, setYDetail] = useState(false);
   const [seriesDetail, setSeriesDetail] = useState(false);
   const [selectData, setSelectData] = useState<string | null>(null);
-  const selectDataIdx = useRef<number>(-1);
+  const [selectDataIdx, setSelectDataIdx] = useState<number>(-1);
+  const [drawType, setDrawType] = useState<(typeof DrawType)[number]>(
+    DrawType[0]
+  );
 
   useEffect(() => {
     if (openDataProperty) return;
@@ -47,26 +57,34 @@ export default function ChartType({
     setYDetail(false);
     setSeriesDetail(false);
     setSelectData(null);
-    selectDataIdx.current = -1;
+    setSelectDataIdx(-1);
   }, [openDataProperty]);
 
-  function changeOpenDetailProperty(flag: NeededDataType) {
+  useEffect(() => {
+    if (!selectData) return;
+    // click to item in [xDetail, yDetail, seriesDetail]
+    changeOrAddInventory(selectData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectData, xDetail, yDetail, seriesDetail, drawType]);
+
+  function openDetailProperty(flag: NeededDataType) {
     setXDetail(false);
     setYDetail(false);
     setSeriesDetail(false);
     setSelectData(null);
+    setDrawType(DrawType[0]);
     switch (flag) {
       case 'X':
         setXDetail(true);
-        selectDataIdx.current = xInventory.length;
+        setSelectDataIdx(xInventory.length);
         break;
       case 'Y':
         setYDetail(true);
-        selectDataIdx.current = yInventory.length;
+        setSelectDataIdx(yInventory.length);
         break;
       case 'Series':
         setSeriesDetail(true);
-        selectDataIdx.current = seriesInventory.length;
+        setSelectDataIdx(seriesInventory.length);
         break;
       default:
         console.error('error!');
@@ -85,25 +103,24 @@ export default function ChartType({
     const right = selectedInventory.slice(idx + 1);
     setSelectedInventory([...left, ...right]);
     setSelectData(null);
-    selectDataIdx.current = selectedInventory.length - 1;
+    setSelectDataIdx(seriesInventory.length - 1);
   }
 
-  function changeInventory(item: string) {
-    setSelectData(item);
+  function changeOrAddInventory(item: string) {
     const [selectedInventory, setSelectedInventory] = xDetail
       ? [xInventory, setXInventory]
       : yDetail
         ? [yInventory, setYInventory]
         : [seriesInventory, setSeriesInventory];
-    const left = selectedInventory.slice(0, selectDataIdx.current);
-    const right = selectedInventory.slice(selectDataIdx.current + 1);
+    const left = selectedInventory.slice(0, selectDataIdx);
+    const right = selectedInventory.slice(selectDataIdx + 1);
     const newValue: string[][] = [];
     if (xDetail) {
       // realname, alias
       newValue.push([item, item]);
     } else if (yDetail) {
-      // realname, alias, calculateType
-      newValue.push([item, item, NumberProperty[0]]);
+      // realname, alias, drawType, calculateType
+      newValue.push([item, item, drawType, NumberProperty[0]]);
     } else if (seriesDetail) {
       // realname, alias
       newValue.push([item, item]);
@@ -120,7 +137,7 @@ export default function ChartType({
           <div
             key={item}
             className={`${distyles.dataItem} ${item === selectData ? distyles.dataItemSelect : ''}`}
-            onClick={() => changeInventory(item)}
+            onClick={() => setSelectData(item)}
           >
             <div>{item}</div>
             <div>{inventoryFormat.current[item]}</div>
@@ -130,9 +147,31 @@ export default function ChartType({
     );
   }
 
-  function chooseThisInventory(item: string, idx: number) {
-    selectDataIdx.current = idx;
-    changeInventory(item);
+  function chooseThisInventory(
+    flag: NeededDataType,
+    item: string[],
+    idx: number
+  ) {
+    setSelectDataIdx(idx);
+    setSelectData(item[0]);
+    setXDetail(false);
+    setYDetail(false);
+    setSeriesDetail(false);
+    switch (flag) {
+      case 'X':
+        setXDetail(true);
+        break;
+      case 'Y':
+        setYDetail(true);
+        setDrawType(item[2] as (typeof DrawType)[number]);
+        break;
+      case 'Series':
+        setSeriesDetail(true);
+        break;
+      default:
+        console.error('error');
+        break;
+    }
   }
 
   return (
@@ -153,8 +192,8 @@ export default function ChartType({
             {xInventory.map((item, idx) => (
               <div
                 key={idx}
-                className={`${distyles.propertyOpenBox} ${distyles.selectedData} ${xDetail && selectDataIdx.current === idx ? distyles.selectedDataSelect : ''}`}
-                onClick={() => chooseThisInventory(item[0], idx)}
+                className={`${distyles.propertyOpenBox} ${distyles.selectedData} ${xDetail && selectDataIdx === idx ? distyles.selectedDataSelect : ''}`}
+                onClick={() => chooseThisInventory('X', item, idx)}
               >
                 <div>{item[1]}</div>
                 <div onClick={() => removeInventory('X', idx)}>X</div>
@@ -162,7 +201,7 @@ export default function ChartType({
             ))}
             <div
               className={distyles.propertyOpenBox}
-              onClick={() => changeOpenDetailProperty('X')}
+              onClick={() => openDetailProperty('X')}
             >
               x축 추가
             </div>
@@ -172,18 +211,19 @@ export default function ChartType({
             {yInventory.map((item, idx) => (
               <div
                 key={idx}
-                className={`${distyles.propertyOpenBox} ${distyles.selectedData} ${yDetail && selectDataIdx.current === idx ? distyles.selectedDataSelect : ''}`}
-                onClick={() => chooseThisInventory(item[0], idx)}
+                className={`${distyles.propertyOpenBox} ${distyles.selectedData} ${yDetail && selectDataIdx === idx ? distyles.selectedDataSelect : ''}`}
+                onClick={() => chooseThisInventory('Y', item, idx)}
               >
                 <div>
-                  {item[1]} ({item[2]})
+                  {item[1]}
+                  {item[2]} ({item[3]})
                 </div>
                 <div onClick={() => removeInventory('Y', idx)}>X</div>
               </div>
             ))}
             <div
               className={distyles.propertyOpenBox}
-              onClick={() => changeOpenDetailProperty('Y')}
+              onClick={() => openDetailProperty('Y')}
             >
               y축 추가
             </div>
@@ -193,8 +233,8 @@ export default function ChartType({
             {seriesInventory.map((item, idx) => (
               <div
                 key={idx}
-                className={`${distyles.propertyOpenBox} ${distyles.selectedData} ${seriesDetail && selectDataIdx.current === idx ? distyles.selectedDataSelect : ''}`}
-                onClick={() => chooseThisInventory(item[0], idx)}
+                className={`${distyles.propertyOpenBox} ${distyles.selectedData} ${seriesDetail && selectDataIdx === idx ? distyles.selectedDataSelect : ''}`}
+                onClick={() => chooseThisInventory('Series', item, idx)}
               >
                 <div>{item[1]}</div>
                 <div onClick={() => removeInventory('Series', idx)}>X</div>
@@ -202,7 +242,7 @@ export default function ChartType({
             ))}
             <div
               className={distyles.propertyOpenBox}
-              onClick={() => changeOpenDetailProperty('Series')}
+              onClick={() => openDetailProperty('Series')}
             >
               대분류 추가
             </div>
@@ -231,7 +271,15 @@ export default function ChartType({
           </div>
           <div className={distyles.drawer} style={{ borderTop: 'none' }}>
             <h5>차트 타입</h5>
-            <div>차트 종류 나열</div>
+            {DrawType.map(item => (
+              <div
+                key={item}
+                className={`${distyles.drawType} ${drawType === item ? distyles.drawTypeSelect : ''}`}
+                onClick={() => setDrawType(item)}
+              >
+                {item}
+              </div>
+            ))}
           </div>
           <div className={distyles.drawer}>
             <h5>데이터 선택</h5>
