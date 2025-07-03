@@ -26,12 +26,12 @@ import { calculate } from '@/utils/calculate';
 
 type NeededDataType = 'X' | 'Y' | 'Series';
 const DrawType = [
-  'side-by-side bar',
-  'stack bar',
-  'full-stack bar',
+  'bar',
+  'stackedbar',
+  'fullstackedbar',
   'line',
-  'stack line',
-  'full-stack line'
+  'stackedline',
+  'fullstackedline'
 ] as const;
 
 interface ChartTypeParameter {
@@ -468,8 +468,7 @@ export default function ChartType({
               argumentField={[
                 ...seriesInventory.map(item => item[0]),
                 ...xInventory.map(item => item[0])
-              ].join('/')}
-              type="bar"
+              ].join('/')} // x value
               hoverMode={
                 seriesInventory.length ? 'allArgumentPoints' : 'onlyPoint'
               }
@@ -478,16 +477,13 @@ export default function ChartType({
               }
             />
             {yInventory
-              .map((item, idx) => [item[0], item[1], idx])
-              .map(item => (
+              .map((item, idx) => [item[0], item[1], item[2], idx])
+              .map(([original, alias, drawtype, idx]) => (
                 <Series
-                  key={item[0] + String(item[2])}
-                  valueField={item[0] + '-' + item[2]} // y value
-                  argumentField={[
-                    ...seriesInventory.map(item => item[0]),
-                    ...xInventory.map(item => item[0])
-                  ].join('/')} // x value
-                  name={item[1]}
+                  key={original + String(idx)}
+                  valueField={original + '-' + idx} // y value
+                  type={drawtype}
+                  name={alias}
                 />
               ))}
 
