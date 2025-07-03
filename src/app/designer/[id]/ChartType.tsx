@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { NumberProperty, NumberPropertyType } from '@/constants';
 import distyles from './designerId.module.css';
+import { calculate } from '@/utils/calculate';
 
 type NeededDataType = 'X' | 'Y' | 'Series';
 const DrawType = [
@@ -53,6 +54,9 @@ export default function ChartType({
   const [calculateType, setCalculateType] = useState<NumberPropertyType>(
     NumberProperty[0]
   );
+  const [dataSource, setDataSource] = useState<
+    Record<string, string | number>[]
+  >([]);
   const ExceptNumberProperty = ['카운트', '고유 카운트'];
 
   useEffect(() => {
@@ -70,6 +74,53 @@ export default function ChartType({
     changeOrAddInventory(selectData);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectData, xDetail, yDetail, seriesDetail, drawType, calculateType]);
+
+  useEffect(() => {
+    if (!Object.keys(xInventory).length || !Object.keys(yInventory).length) {
+      setDataSource([]);
+      return;
+    }
+    const xkeys = [
+      ...seriesInventory.map(item => item[0]),
+      ...xInventory.map(item => item[0])
+    ];
+    const ykeys = yInventory.map(item => item[0]);
+    const format: Record<string, string | number | (string | number)[]>[] = [];
+    const match: Record<string, number> = {};
+    let cnt = 0;
+    originalDataSource.current.forEach(item => {
+      let formatIdx = 0;
+      const keyword = xkeys.map(key => item[inventory.current[key]]).join('/');
+      if (keyword in match) formatIdx = match[keyword];
+      else {
+        match[keyword] = cnt;
+        formatIdx = cnt;
+        cnt++;
+        const newFormat: Record<string, string | number | number[]> = {
+          [xkeys.join('/')]: keyword
+        };
+        ykeys.forEach((key, idx) => (newFormat[key + '-' + idx] = []));
+        format.push(newFormat);
+      }
+      ykeys.forEach((key, idx) =>
+        (format[formatIdx][key + '-' + idx] as (string | number)[]).push(
+          item[inventory.current[key]]
+        )
+      );
+    });
+
+    const final: Record<string, string | number>[] = format.map(item => {
+      ykeys.forEach((key, idx) => {
+        item[key + '-' + idx] = calculate(
+          yInventory[idx][3] as NumberPropertyType,
+          item[key + '-' + idx] as number[]
+        );
+      });
+      return item as Record<string, string | number>;
+    });
+    console.log('check graph data', final);
+    setDataSource(final);
+  }, [inventory, originalDataSource, xInventory, yInventory, seriesInventory]);
 
   function openDetailProperty(flag: NeededDataType) {
     setXDetail(false);
