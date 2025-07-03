@@ -6,7 +6,8 @@ import {
   useState,
   useEffect,
   RefObject,
-  useRef
+  useRef,
+  MouseEvent
 } from 'react';
 import {
   ArgumentAxis,
@@ -180,7 +181,12 @@ export default function ChartType({
     }
   }
 
-  function removeInventory(flag: NeededDataType, idx: number) {
+  function removeInventory(
+    e: MouseEvent<HTMLDivElement>,
+    flag: NeededDataType,
+    idx: number
+  ) {
+    e.stopPropagation();
     const [selectedInventory, setSelectedInventory] =
       flag === 'X'
         ? [xInventory, setXInventory]
@@ -318,7 +324,7 @@ export default function ChartType({
                 onClick={() => chooseThisInventory('X', item, idx)}
               >
                 <div>{item[1]}</div>
-                <div onClick={() => removeInventory('X', idx)}>X</div>
+                <div onClick={e => removeInventory(e, 'X', idx)}>X</div>
               </div>
             ))}
             <div
@@ -340,7 +346,7 @@ export default function ChartType({
                   {item[1]}
                   {item[2]} ({item[3]})
                 </div>
-                <div onClick={() => removeInventory('Y', idx)}>X</div>
+                <div onClick={e => removeInventory(e, 'Y', idx)}>X</div>
               </div>
             ))}
             <div
@@ -359,7 +365,7 @@ export default function ChartType({
                 onClick={() => chooseThisInventory('Series', item, idx)}
               >
                 <div>{item[1]}</div>
-                <div onClick={() => removeInventory('Series', idx)}>X</div>
+                <div onClick={e => removeInventory(e, 'Series', idx)}>X</div>
               </div>
             ))}
             <div
