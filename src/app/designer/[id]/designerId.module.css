@@ -236,6 +236,14 @@
   background-color: aliceblue;
 }
 
+.calculateType:hover {
+  background-color: honeydew;
+}
+
+.calculateTypeSelect {
+  background-color: honeydew;
+}
+
 /* MosaicWindow header */
 :global(.mosaic-window) {
   overflow: visible !important;

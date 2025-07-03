@@ -7,7 +7,7 @@ import {
   useEffect,
   RefObject
 } from 'react';
-import { NumberProperty } from '@/constants';
+import { NumberProperty, NumberPropertyType } from '@/constants';
 import distyles from './designerId.module.css';
 
 type NeededDataType = 'X' | 'Y' | 'Series';
@@ -50,6 +50,10 @@ export default function ChartType({
   const [drawType, setDrawType] = useState<(typeof DrawType)[number]>(
     DrawType[0]
   );
+  const [calculateType, setCalculateType] = useState<NumberPropertyType>(
+    NumberProperty[0]
+  );
+  const ExceptNumberProperty = ['카운트', '고유 카운트'];
 
   useEffect(() => {
     if (openDataProperty) return;
@@ -65,7 +69,7 @@ export default function ChartType({
     // click to item in [xDetail, yDetail, seriesDetail]
     changeOrAddInventory(selectData);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectData, xDetail, yDetail, seriesDetail, drawType]);
+  }, [selectData, xDetail, yDetail, seriesDetail, drawType, calculateType]);
 
   function openDetailProperty(flag: NeededDataType) {
     setXDetail(false);
@@ -73,6 +77,7 @@ export default function ChartType({
     setSeriesDetail(false);
     setSelectData(null);
     setDrawType(DrawType[0]);
+    setCalculateType(NumberProperty[0]);
     switch (flag) {
       case 'X':
         setXDetail(true);
@@ -119,8 +124,16 @@ export default function ChartType({
       // realname, alias
       newValue.push([item, item]);
     } else if (yDetail) {
+      let nowCalculateType = calculateType;
+      if (
+        inventoryFormat.current[item] !== 'number' &&
+        !ExceptNumberProperty.includes(calculateType)
+      ) {
+        setCalculateType(NumberProperty[0]);
+        nowCalculateType = NumberProperty[0];
+      }
       // realname, alias, drawType, calculateType
-      newValue.push([item, item, drawType, NumberProperty[0]]);
+      newValue.push([item, item, drawType, nowCalculateType]);
     } else if (seriesDetail) {
       // realname, alias
       newValue.push([item, item]);
@@ -164,6 +177,7 @@ export default function ChartType({
       case 'Y':
         setYDetail(true);
         setDrawType(item[2] as (typeof DrawType)[number]);
+        setCalculateType(item[3] as NumberPropertyType);
         break;
       case 'Series':
         setSeriesDetail(true);
@@ -285,7 +299,25 @@ export default function ChartType({
             <h5>데이터 선택</h5>
             <ViewAllData />
             <h5>집계 방식 선택</h5>
-            <div>합계, 카운트,...</div>
+            {selectData && inventoryFormat.current[selectData] === 'number'
+              ? NumberProperty.map(item => (
+                  <div
+                    key={item}
+                    className={`${distyles.calculateType} ${calculateType === item ? distyles.calculateTypeSelect : ''}`}
+                    onClick={() => setCalculateType(item)}
+                  >
+                    {item}
+                  </div>
+                ))
+              : ExceptNumberProperty.map(item => (
+                  <div
+                    key={item}
+                    className={`${distyles.calculateType} ${calculateType === item ? distyles.calculateTypeSelect : ''}`}
+                    onClick={() => setCalculateType(item as NumberPropertyType)}
+                  >
+                    {item}
+                  </div>
+                ))}
           </div>
           <div className={distyles.drawer}>
             <h5>데이터명 바꾸기</h5>
