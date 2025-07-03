@@ -56,6 +56,11 @@ export default function Chart({
     setOpenDataProperty(false);
   }, [mosaicProperty]);
 
+  function changeProperty() {
+    setMosaicPropertyDetail(!mosaicPropertyDetail);
+    if (mosaicPropertyDetail) setOpenDataProperty(false);
+  }
+
   function removeMosaicNode(
     node: MosaicNode<string> | null,
     removeId: string
@@ -117,7 +122,7 @@ export default function Chart({
               <div className={distyles.chartPropertyBox}>
                 <div
                   className={distyles.chartPropertyItem}
-                  onClick={() => setMosaicPropertyDetail(!mosaicPropertyDetail)}
+                  onClick={changeProperty}
                 >
                   길이조절
                 </div>
