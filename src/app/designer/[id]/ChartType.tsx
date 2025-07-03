@@ -5,8 +5,21 @@ import {
   SetStateAction,
   useState,
   useEffect,
-  RefObject
+  RefObject,
+  useRef
 } from 'react';
+import {
+  ArgumentAxis,
+  Chart,
+  Chart as ChartComponent,
+  CommonSeriesSettings,
+  Export,
+  Label,
+  Legend,
+  Series,
+  Tooltip,
+  ZoomAndPan
+} from 'devextreme-react/chart';
 import { NumberProperty, NumberPropertyType } from '@/constants';
 import distyles from './designerId.module.css';
 import { calculate } from '@/utils/calculate';
@@ -58,6 +71,7 @@ export default function ChartType({
     Record<string, string | number>[]
   >([]);
   const ExceptNumberProperty = ['카운트', '고유 카운트'];
+  const chartRef = useRef<ChartComponent>(null);
 
   useEffect(() => {
     if (openDataProperty) return;
@@ -76,7 +90,7 @@ export default function ChartType({
   }, [selectData, xDetail, yDetail, seriesDetail, drawType, calculateType]);
 
   useEffect(() => {
-    if (!Object.keys(xInventory).length || !Object.keys(yInventory).length) {
+    if (!xInventory.length || !yInventory.length) {
       setDataSource([]);
       return;
     }
@@ -121,6 +135,24 @@ export default function ChartType({
     console.log('check graph data', final);
     setDataSource(final);
   }, [inventory, originalDataSource, xInventory, yInventory, seriesInventory]);
+
+  useEffect(() => {
+    if (!dataSource.length) return;
+    const parent = document.getElementById('chartBox');
+    if (!parent || !chartRef.current) return;
+    let timeout: ReturnType<typeof setTimeout> | null = null;
+    const observer = new ResizeObserver(() => {
+      if (timeout) clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        chartRef.current?.instance?.render();
+      }, 300); // render after 300ms from stoppipng resizing
+    });
+    observer.observe(parent);
+    return () => {
+      observer.disconnect();
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [dataSource]);
 
   function openDetailProperty(flag: NeededDataType) {
     setXDetail(false);
@@ -239,6 +271,31 @@ export default function ChartType({
     }
   }
 
+  function customizeTooltip(arg: {
+    argumentText: string;
+    seriesName: string;
+    valueText: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    point: any;
+  }) {
+    const keys = Object.keys(arg.point.data);
+    const xName = [
+      ...seriesInventory.map(item => item[0]),
+      ...xInventory.map(item => item[0])
+    ].join('/');
+    const texts = keys
+      .map(item => {
+        if (xName.includes(item)) return `<br />${arg.point.data[item]}`;
+        return `<br />${item.slice(0, item.lastIndexOf('-'))}: ${arg.point.data[item]}`;
+      })
+      .join('');
+    return seriesInventory.length
+      ? { text: `${texts}` }
+      : {
+          text: `${arg.argumentText}<br />${arg.seriesName}: ${arg.valueText} `
+        };
+  }
+
   return (
     <>
       {mosaicProperty === mosaicId && openDataProperty ? (
@@ -314,6 +371,7 @@ export default function ChartType({
           </div>
         </div>
       ) : null}
+
       {mosaicProperty === mosaicId && openDataProperty && xDetail ? (
         <div className={distyles.propertyDetail}>
           <div className={distyles.header} onClick={() => setXDetail(false)}>
@@ -329,6 +387,7 @@ export default function ChartType({
           </div>
         </div>
       ) : null}
+
       {mosaicProperty === mosaicId && openDataProperty && yDetail ? (
         <div className={distyles.propertyDetail}>
           <div className={distyles.header} onClick={() => setYDetail(false)}>
@@ -376,6 +435,7 @@ export default function ChartType({
           </div>
         </div>
       ) : null}
+
       {mosaicProperty === mosaicId && openDataProperty && seriesDetail ? (
         <div className={distyles.propertyDetail}>
           <div
@@ -394,6 +454,61 @@ export default function ChartType({
           </div>
         </div>
       ) : null}
+
+      <div id="chartBox">
+        {dataSource.length ? (
+          <Chart
+            id="chart"
+            ref={chartRef}
+            title="Teresa BI"
+            dataSource={dataSource}
+            redrawOnResize={true}
+          >
+            <CommonSeriesSettings
+              argumentField={[
+                ...seriesInventory.map(item => item[0]),
+                ...xInventory.map(item => item[0])
+              ].join('/')}
+              type="bar"
+              hoverMode={
+                seriesInventory.length ? 'allArgumentPoints' : 'onlyPoint'
+              }
+              selectionMode={
+                seriesInventory.length ? 'allArgumentPoints' : 'onlyPoint'
+              }
+            />
+            {yInventory
+              .map((item, idx) => [item[0], item[1], idx])
+              .map(item => (
+                <Series
+                  key={item[0] + String(item[2])}
+                  valueField={item[0] + '-' + item[2]} // y value
+                  argumentField={[
+                    ...seriesInventory.map(item => item[0]),
+                    ...xInventory.map(item => item[0])
+                  ].join('/')} // x value
+                  name={item[1]}
+                />
+              ))}
+
+            {/* customize x layer name */}
+            <ArgumentAxis>
+              <Label
+                customizeText={({ valueText }: { valueText: string }) =>
+                  `X: ${valueText}`
+                }
+              />
+            </ArgumentAxis>
+
+            {/* location of chart property */}
+            <Legend verticalAlignment="bottom" horizontalAlignment="center" />
+
+            <Tooltip enabled={true} customizeTooltip={customizeTooltip} />
+            <ZoomAndPan argumentAxis="both" valueAxis="both" />
+            <Export enabled={true} />
+          </Chart>
+        ) : null}
+      </div>
     </>
   );
 }

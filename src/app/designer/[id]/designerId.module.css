@@ -135,6 +135,7 @@
   max-height: 100%;
   height: fit-content;
   overflow: auto;
+  background-color: white;
 }
 
 .openProperty .title {
@@ -186,6 +187,7 @@
   max-height: 100%;
   height: fit-content;
   overflow: auto;
+  background-color: white;
 }
 
 .propertyDetail .header {
@@ -266,4 +268,9 @@
 
 :global(.hide-mosaic-header .mosaic-window-toolbar) {
   display: none !important;
+}
+
+/* devExtrene tooltip */
+:global(.dxc-tooltip) {
+  z-index: 9999 !important;
 }
