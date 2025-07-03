@@ -461,10 +461,11 @@ export default function ChartType({
         </div>
       ) : null}
 
-      <div id="chartBox">
+      <div id="chartBox" className={distyles.chartBox}>
         {dataSource.length ? (
           <Chart
             id="chart"
+            height="100%"
             ref={chartRef}
             title="Teresa BI"
             dataSource={dataSource}

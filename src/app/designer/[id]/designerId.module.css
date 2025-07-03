@@ -96,6 +96,8 @@
 .chart {
   height: 100%;
   position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .connectData {
@@ -244,6 +246,12 @@
 
 .calculateTypeSelect {
   background-color: honeydew;
+}
+
+.chartBox {
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 0.5rem;
 }
 
 /* MosaicWindow header */
