@@ -11,6 +11,7 @@ import {
 import { Mosaic, MosaicWindow, MosaicNode } from 'react-mosaic-component';
 import 'react-mosaic-component/react-mosaic-component.css';
 import ChartType from './ChartType';
+import ImgType from './ImgType';
 import distyles from './designerId.module.css';
 
 interface ChartParameter {
@@ -149,6 +150,14 @@ export default function Chart({
                 inventory={inventory}
                 inventoryFormat={inventoryFormat}
                 originalDataSource={originalDataSource}
+                mosaicProperty={mosaicProperty}
+                mosaicId={id}
+                openDataProperty={openDataProperty}
+                setOpenDataProperty={setOpenDataProperty}
+              />
+            ) : null}
+            {selectedChartType === 'img' ? (
+              <ImgType
                 mosaicProperty={mosaicProperty}
                 mosaicId={id}
                 openDataProperty={openDataProperty}
