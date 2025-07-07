@@ -29,6 +29,7 @@ interface ChartParameter {
   setMosaicProperty: Dispatch<SetStateAction<string | null>>;
   mosaicPropertyDetail: boolean;
   setMosaicPropertyDetail: Dispatch<SetStateAction<boolean>>;
+  openModal: boolean;
   setOpenModal: Dispatch<SetStateAction<boolean>>;
   setModalNode: Dispatch<SetStateAction<ReactNode>>;
 }
@@ -47,6 +48,7 @@ export default function Chart({
   setMosaicProperty,
   mosaicPropertyDetail,
   setMosaicPropertyDetail,
+  openModal,
   setOpenModal,
   setModalNode
 }: ChartParameter) {
@@ -167,6 +169,7 @@ export default function Chart({
                 mosaicId={id}
                 openDataProperty={openDataProperty}
                 setOpenDataProperty={setOpenDataProperty}
+                openModal={openModal}
                 setOpenModal={setOpenModal}
                 setModalNode={setModalNode}
               />

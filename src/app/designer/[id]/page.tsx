@@ -219,6 +219,7 @@ export default function Home() {
                     setMosaicProperty={setMosaicProperty}
                     mosaicPropertyDetail={mosaicPropertyDetail}
                     setMosaicPropertyDetail={setMosaicPropertyDetail}
+                    openModal={openModal}
                     setOpenModal={setOpenModal}
                     setModalNode={setModalNode}
                   />
