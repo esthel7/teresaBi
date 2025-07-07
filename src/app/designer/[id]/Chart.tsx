@@ -6,7 +6,8 @@ import {
   MouseEvent,
   useState,
   useEffect,
-  RefObject
+  RefObject,
+  ReactNode
 } from 'react';
 import { Mosaic, MosaicWindow, MosaicNode } from 'react-mosaic-component';
 import 'react-mosaic-component/react-mosaic-component.css';
@@ -28,6 +29,8 @@ interface ChartParameter {
   setMosaicProperty: Dispatch<SetStateAction<string | null>>;
   mosaicPropertyDetail: boolean;
   setMosaicPropertyDetail: Dispatch<SetStateAction<boolean>>;
+  setOpenModal: Dispatch<SetStateAction<boolean>>;
+  setModalNode: Dispatch<SetStateAction<ReactNode>>;
 }
 
 export default function Chart({
@@ -43,7 +46,9 @@ export default function Chart({
   mosaicProperty,
   setMosaicProperty,
   mosaicPropertyDetail,
-  setMosaicPropertyDetail
+  setMosaicPropertyDetail,
+  setOpenModal,
+  setModalNode
 }: ChartParameter) {
   const [openDataProperty, setOpenDataProperty] = useState(false);
 
@@ -162,6 +167,8 @@ export default function Chart({
                 mosaicId={id}
                 openDataProperty={openDataProperty}
                 setOpenDataProperty={setOpenDataProperty}
+                setOpenModal={setOpenModal}
+                setModalNode={setModalNode}
               />
             ) : null}
           </div>

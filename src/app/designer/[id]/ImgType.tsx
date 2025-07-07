@@ -1,6 +1,6 @@
 'use client';
 
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, ReactNode } from 'react';
 import distyles from './designerId.module.css';
 
 interface ImgTypeParameter {
@@ -8,14 +8,28 @@ interface ImgTypeParameter {
   mosaicId: string;
   openDataProperty: boolean;
   setOpenDataProperty: Dispatch<SetStateAction<boolean>>;
+  setOpenModal: Dispatch<SetStateAction<boolean>>;
+  setModalNode: Dispatch<SetStateAction<ReactNode>>;
 }
 
 export default function ImgType({
   mosaicProperty,
   mosaicId,
   openDataProperty,
-  setOpenDataProperty
+  setOpenDataProperty,
+  setOpenModal,
+  setModalNode
 }: ImgTypeParameter) {
+  function viewModal() {
+    setOpenModal(true);
+    setModalNode(
+      <div className={distyles.modalItem}>
+        modal
+        <div onClick={() => setOpenModal(false)}>X</div>
+      </div>
+    );
+  }
+
   return (
     <>
       {mosaicProperty === mosaicId && openDataProperty ? (
@@ -31,7 +45,9 @@ export default function ImgType({
           </div>
           <div className={distyles.propertySection}>
             <h5>이미지</h5>
-            <div className={distyles.propertyOpenBox}>이미지 업로드</div>
+            <div className={distyles.propertyOpenBox} onClick={viewModal}>
+              이미지 업로드
+            </div>
           </div>
         </div>
       ) : null}

@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, useRef, useState, MouseEvent } from 'react';
+import { ChangeEvent, useRef, useState, MouseEvent, ReactNode } from 'react';
 import { MosaicNode } from 'react-mosaic-component';
 import * as XLSX from 'xlsx';
 import distyles from './designerId.module.css';
@@ -22,6 +22,8 @@ export default function Home() {
   );
   const [mosaicProperty, setMosaicProperty] = useState<string | null>(null);
   const [mosaicPropertyDetail, setMosaicPropertyDetail] = useState(true);
+  const [openModal, setOpenModal] = useState(false);
+  const [modalNode, setModalNode] = useState<ReactNode>(null);
 
   function formatCell(value: unknown) {
     if (!isNaN(Number(value)) && typeof value === 'string')
@@ -106,122 +108,131 @@ export default function Home() {
   }
 
   return (
-    <div className={distyles.designer}>
-      <div className={distyles.sideBar} onClick={sideBarClick}>
-        <div style={{ height: '3rem' }}>햄버거</div>
-        <div>
-          <div className={distyles.sideBarTitle}>일반</div>
-          <div className={distyles.sideBarItem} data-type="grid">
-            그리드
+    <>
+      <div className={distyles.designer}>
+        <div className={distyles.sideBar} onClick={sideBarClick}>
+          <div style={{ height: '3rem' }}>햄버거</div>
+          <div>
+            <div className={distyles.sideBarTitle}>일반</div>
+            <div className={distyles.sideBarItem} data-type="grid">
+              그리드
+            </div>
+            <div className={distyles.sideBarItem} data-type="chart">
+              차트
+            </div>
+            <div className={distyles.sideBarItem} data-type="pie">
+              파이
+            </div>
+            <div className={distyles.sideBarItem} data-type="tree">
+              트리
+            </div>
+            <div className={distyles.sideBarItem} data-type="scatter">
+              분산형
+            </div>
+            <div className={distyles.sideBarItem} data-type="text">
+              텍스트
+            </div>
+            <div className={distyles.sideBarItem} data-type="img">
+              이미지
+            </div>
           </div>
-          <div className={distyles.sideBarItem} data-type="chart">
-            차트
+          <div>
+            <div className={distyles.sideBarTitle}>지도</div>
+            <div className={distyles.sideBarItem} data-type="map">
+              지리적
+            </div>
           </div>
-          <div className={distyles.sideBarItem} data-type="pie">
-            파이
+          <div>
+            <div className={distyles.sideBarTitle}>필터</div>
+            <div className={distyles.sideBarItem} data-type="range">
+              범위
+            </div>
+            <div className={distyles.sideBarItem} data-type="combo">
+              콤보
+            </div>
+            <div className={distyles.sideBarItem} data-type="date">
+              날짜
+            </div>
+            <div className={distyles.sideBarItem} data-type="tree-filter">
+              트리
+            </div>
+            <div className={distyles.sideBarItem} data-type="list">
+              리스트
+            </div>
           </div>
-          <div className={distyles.sideBarItem} data-type="tree">
-            트리
-          </div>
-          <div className={distyles.sideBarItem} data-type="scatter">
-            분산형
-          </div>
-          <div className={distyles.sideBarItem} data-type="text">
-            텍스트
-          </div>
-          <div className={distyles.sideBarItem} data-type="img">
-            이미지
-          </div>
-        </div>
-        <div>
-          <div className={distyles.sideBarTitle}>지도</div>
-          <div className={distyles.sideBarItem} data-type="map">
-            지리적
-          </div>
-        </div>
-        <div>
-          <div className={distyles.sideBarTitle}>필터</div>
-          <div className={distyles.sideBarItem} data-type="range">
-            범위
-          </div>
-          <div className={distyles.sideBarItem} data-type="combo">
-            콤보
-          </div>
-          <div className={distyles.sideBarItem} data-type="date">
-            날짜
-          </div>
-          <div className={distyles.sideBarItem} data-type="tree-filter">
-            트리
-          </div>
-          <div className={distyles.sideBarItem} data-type="list">
-            리스트
-          </div>
-        </div>
 
-        {/* temporary (delete after) */}
-        <input
-          type="file"
-          accept=".xlsx, .xls"
-          onChange={handleFileUpload}
-          style={{
-            border: '1px solid blue',
-            height: '80px',
-            width: 'inherit',
-            marginTop: '20px'
-          }}
-        />
+          {/* temporary (delete after) */}
+          <input
+            type="file"
+            accept=".xlsx, .xls"
+            onChange={handleFileUpload}
+            style={{
+              border: '1px solid blue',
+              height: '80px',
+              width: 'inherit',
+              marginTop: '20px'
+            }}
+          />
+        </div>
+        <main className={distyles.main}>
+          <div className={distyles.topBar}>
+            <div>
+              <div>뒤로</div>
+              <div>앞으로</div>
+            </div>
+            <div>
+              <div>너비</div>
+              <div>자동</div>
+              <div>고정</div>
+              <div>픽셀</div>
+            </div>
+            <div>
+              <div>높이</div>
+              <div>자동</div>
+              <div>고정</div>
+              <div>픽셀</div>
+            </div>
+          </div>
+          <div className={distyles.dashboardBox} onClick={onBlur}>
+            <div className={distyles.dashboardTop}>
+              <div className={distyles.dashboardTitle}>{dashboardTitle}</div>
+              <div className={distyles.share}>공유</div>
+            </div>
+            <div className={distyles.dashboard}>
+              {!chartCnt ? (
+                <div className={distyles.explain}>
+                  도구 상자에서 버튼을 클릭하여 새 항목을 만듭니다.
+                </div>
+              ) : (
+                <div className={distyles.area}>
+                  <Chart
+                    inventory={inventory}
+                    inventoryFormat={inventoryFormat}
+                    originalDataSource={originalDataSource}
+                    selectedChartType={selectedChartType}
+                    setChartCnt={setChartCnt}
+                    chartViews={chartViews}
+                    setChartViews={setChartViews}
+                    mosaicValue={mosaicValue}
+                    setMosaicValue={setMosaicValue}
+                    mosaicProperty={mosaicProperty}
+                    setMosaicProperty={setMosaicProperty}
+                    mosaicPropertyDetail={mosaicPropertyDetail}
+                    setMosaicPropertyDetail={setMosaicPropertyDetail}
+                    setOpenModal={setOpenModal}
+                    setModalNode={setModalNode}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </main>
       </div>
-      <main className={distyles.main}>
-        <div className={distyles.topBar}>
-          <div>
-            <div>뒤로</div>
-            <div>앞으로</div>
-          </div>
-          <div>
-            <div>너비</div>
-            <div>자동</div>
-            <div>고정</div>
-            <div>픽셀</div>
-          </div>
-          <div>
-            <div>높이</div>
-            <div>자동</div>
-            <div>고정</div>
-            <div>픽셀</div>
-          </div>
+      {openModal ? (
+        <div className={distyles.modal} onClick={() => setOpenModal(false)}>
+          {modalNode}
         </div>
-        <div className={distyles.dashboardBox} onClick={onBlur}>
-          <div className={distyles.dashboardTop}>
-            <div className={distyles.dashboardTitle}>{dashboardTitle}</div>
-            <div className={distyles.share}>공유</div>
-          </div>
-          <div className={distyles.dashboard}>
-            {!chartCnt ? (
-              <div className={distyles.explain}>
-                도구 상자에서 버튼을 클릭하여 새 항목을 만듭니다.
-              </div>
-            ) : (
-              <div className={distyles.area}>
-                <Chart
-                  inventory={inventory}
-                  inventoryFormat={inventoryFormat}
-                  originalDataSource={originalDataSource}
-                  selectedChartType={selectedChartType}
-                  setChartCnt={setChartCnt}
-                  chartViews={chartViews}
-                  setChartViews={setChartViews}
-                  mosaicValue={mosaicValue}
-                  setMosaicValue={setMosaicValue}
-                  mosaicProperty={mosaicProperty}
-                  setMosaicProperty={setMosaicProperty}
-                  mosaicPropertyDetail={mosaicPropertyDetail}
-                  setMosaicPropertyDetail={setMosaicPropertyDetail}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      </main>
-    </div>
+      ) : null}
+    </>
   );
 }
