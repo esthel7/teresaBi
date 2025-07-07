@@ -19,7 +19,6 @@ interface ChartParameter {
   inventory: RefObject<Record<string, number>>;
   inventoryFormat: RefObject<Record<string, string>>;
   originalDataSource: RefObject<(string | number)[][]>;
-  selectedChartType: ChartType | null;
   setChartCnt: Dispatch<SetStateAction<number>>;
   chartViews: string[];
   mosaicValue: MosaicNode<string> | null;
@@ -38,7 +37,6 @@ export default function Chart({
   inventory,
   originalDataSource,
   inventoryFormat,
-  selectedChartType,
   setChartCnt,
   chartViews,
   setChartViews,
@@ -59,10 +57,6 @@ export default function Chart({
       // redirect /designer after fetching data
     }
   }, [inventory]);
-
-  useEffect(() => {
-    setOpenDataProperty(false);
-  }, [mosaicProperty]);
 
   function changeProperty() {
     setMosaicPropertyDetail(!mosaicPropertyDetail);
@@ -95,6 +89,7 @@ export default function Chart({
   }
 
   function openProperty(e: MouseEvent<HTMLDivElement>, settingId: string) {
+    setOpenDataProperty(false);
     setMosaicProperty(settingId);
     e.stopPropagation();
   }
@@ -138,7 +133,7 @@ export default function Chart({
                   <>
                     <div
                       className={distyles.chartPropertyItem}
-                      onClick={() => setOpenDataProperty(true)}
+                      onClick={e => openDataConnectSection(e, id)}
                     >
                       데이터 연결
                     </div>
@@ -152,7 +147,7 @@ export default function Chart({
                 ) : null}
               </div>
             ) : null}
-            {selectedChartType === 'chart' ? (
+            {id.split('-')[0] === 'chart' ? (
               <ChartType
                 inventory={inventory}
                 inventoryFormat={inventoryFormat}
@@ -163,7 +158,7 @@ export default function Chart({
                 setOpenDataProperty={setOpenDataProperty}
               />
             ) : null}
-            {selectedChartType === 'img' ? (
+            {id.split('-')[0] === 'img' ? (
               <ImgType
                 mosaicProperty={mosaicProperty}
                 mosaicId={id}

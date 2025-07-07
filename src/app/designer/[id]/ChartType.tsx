@@ -201,6 +201,7 @@ export default function ChartType({
   }
 
   function changeOrAddInventory(item: string) {
+    if (!xDetail && !yDetail && !seriesDetail) return;
     const [selectedInventory, setSelectedInventory] = xDetail
       ? [xInventory, setXInventory]
       : yDetail
@@ -305,7 +306,10 @@ export default function ChartType({
   return (
     <>
       {mosaicProperty === mosaicId && openDataProperty ? (
-        <div className={distyles.openProperty}>
+        <div
+          className={distyles.openProperty}
+          onClick={e => e.stopPropagation()}
+        >
           <div className={distyles.title}>
             <div>데이터 연결</div>
             <div
@@ -379,7 +383,10 @@ export default function ChartType({
       ) : null}
 
       {mosaicProperty === mosaicId && openDataProperty && xDetail ? (
-        <div className={distyles.propertyDetail}>
+        <div
+          className={distyles.propertyDetail}
+          onClick={e => e.stopPropagation()}
+        >
           <div className={distyles.header} onClick={() => setXDetail(false)}>
             뒤로
           </div>
@@ -395,7 +402,10 @@ export default function ChartType({
       ) : null}
 
       {mosaicProperty === mosaicId && openDataProperty && yDetail ? (
-        <div className={distyles.propertyDetail}>
+        <div
+          className={distyles.propertyDetail}
+          onClick={e => e.stopPropagation()}
+        >
           <div className={distyles.header} onClick={() => setYDetail(false)}>
             뒤로
           </div>
@@ -443,7 +453,10 @@ export default function ChartType({
       ) : null}
 
       {mosaicProperty === mosaicId && openDataProperty && seriesDetail ? (
-        <div className={distyles.propertyDetail}>
+        <div
+          className={distyles.propertyDetail}
+          onClick={e => e.stopPropagation()}
+        >
           <div
             className={distyles.header}
             onClick={() => setSeriesDetail(false)}

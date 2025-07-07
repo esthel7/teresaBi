@@ -12,9 +12,6 @@ export default function Home() {
   const inventoryFormat = useRef<Record<string, string>>({});
   const originalDataSource = useRef<(string | number)[][]>([]);
   const [dashboardTitle] = useState('새 대시보드');
-  const [selectedChartType, setSelectedChartType] = useState<ChartType | null>(
-    null
-  );
   const [chartCnt, setChartCnt] = useState(0);
   const [chartViews, setChartViews] = useState<string[]>([]);
   const [mosaicValue, setMosaicValue] = useState<MosaicNode<string> | null>(
@@ -81,7 +78,6 @@ export default function Home() {
 
     if (item && item instanceof HTMLElement) {
       const type = item.dataset.type as ChartType;
-      setSelectedChartType(type);
       setChartCnt(prev => prev + 1);
       const newChartViews = [...chartViews, `${type}-${String(Date.now())}`];
       setChartViews(newChartViews);
@@ -209,7 +205,6 @@ export default function Home() {
                     inventory={inventory}
                     inventoryFormat={inventoryFormat}
                     originalDataSource={originalDataSource}
-                    selectedChartType={selectedChartType}
                     setChartCnt={setChartCnt}
                     chartViews={chartViews}
                     setChartViews={setChartViews}
