@@ -12,6 +12,7 @@ import {
 import { Mosaic, MosaicWindow, MosaicNode } from 'react-mosaic-component';
 import 'react-mosaic-component/react-mosaic-component.css';
 import ChartType from './ChartType';
+import TextType from './TextType';
 import ImgType from './ImgType';
 import distyles from './designerId.module.css';
 
@@ -156,6 +157,17 @@ export default function Chart({
                 mosaicId={id}
                 openDataProperty={openDataProperty}
                 setOpenDataProperty={setOpenDataProperty}
+              />
+            ) : null}
+            {id.split('-')[0] === 'text' ? (
+              <TextType
+                mosaicProperty={mosaicProperty}
+                mosaicId={id}
+                openDataProperty={openDataProperty}
+                setOpenDataProperty={setOpenDataProperty}
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                setModalNode={setModalNode}
               />
             ) : null}
             {id.split('-')[0] === 'img' ? (
