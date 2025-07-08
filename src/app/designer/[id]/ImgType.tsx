@@ -10,6 +10,8 @@ import {
 } from 'react';
 import distyles from './designerId.module.css';
 
+const ImgPosition = ['bottom', ' top', 'left', 'right', 'center'] as const;
+
 interface ImgTypeParameter {
   mosaicProperty: string | null;
   mosaicId: string;
@@ -31,6 +33,8 @@ export default function ImgType({
 }: ImgTypeParameter) {
   const [modalImg, setModalImg] = useState<string | null>(null);
   const [receivedImg, setReceivedImg] = useState<string | null>(null);
+  const [imgPosition, setImgPosition] =
+    useState<(typeof ImgPosition)[number]>('center');
 
   useEffect(() => {
     if (!openModal) return;
@@ -84,7 +88,10 @@ export default function ImgType({
   return (
     <>
       {mosaicProperty === mosaicId && openDataProperty ? (
-        <div className={distyles.openProperty}>
+        <div
+          className={distyles.openProperty}
+          onClick={e => e.stopPropagation()}
+        >
           <div className={distyles.title}>
             <div>속성</div>
             <div
@@ -103,12 +110,29 @@ export default function ImgType({
               이미지 업로드
             </div>
           </div>
+          <div className={distyles.propertySection}>
+            <h5>이미지 위치</h5>
+            {ImgPosition.map(item => (
+              <div
+                key={item}
+                className={`${distyles.propertyOpenBox} ${distyles.selectedData}`}
+                onClick={() => setImgPosition(item)}
+              >
+                {item}
+              </div>
+            ))}
+          </div>
         </div>
       ) : null}
       <div className={distyles.mosaicImgBox}>
         {receivedImg ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img className={distyles.mosaicImg} src={receivedImg} alt="Image" />
+          <img
+            className={distyles.mosaicImg}
+            src={receivedImg}
+            alt="Image"
+            style={{ objectPosition: imgPosition }}
+          />
         ) : null}
       </div>
     </>
