@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  ChangeEvent,
   Dispatch,
   SetStateAction,
   ReactNode,
@@ -8,6 +9,7 @@ import {
   useState
 } from 'react';
 import DOMPurify from 'dompurify';
+import mammoth from 'mammoth';
 import TextEditor from './TextEditor';
 import 'react-quill-new/dist/quill.snow.css';
 import distyles from './designerId.module.css';
@@ -49,12 +51,28 @@ export default function TextType({
     if (!openModal) return;
     setModalNode(
       <div className={distyles.modalItem} onClick={e => e.stopPropagation()}>
+        <input type="file" accept=".docx" onChange={handleWordFile} />
         <TextEditor value={putText} setValue={setPutText} />
         <div onClick={confirmModal}>확인</div>
       </div>
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openModal, putText]);
+
+  async function handleWordFile(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const checkProgress = confirm('기존 내용이 지워집니다. 진행하시겠습니까?');
+    if (!checkProgress) return;
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.convertToHtml({ arrayBuffer });
+      setPutText(result.value.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;'));
+    } catch (error) {
+      console.error('Error reading .docx file:', error);
+      alert('파일을 읽는 중 오류가 발생했습니다.');
+    }
+  }
 
   function confirmModal() {
     setWrittenText(
