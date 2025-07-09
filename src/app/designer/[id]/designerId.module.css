@@ -322,6 +322,21 @@
   object-fit: contain;
 }
 
+.textEditorBox {
+  padding: 1rem;
+  max-height: 70vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.textEditor {
+  flex: 1;
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+}
+
 /* MosaicWindow header */
 :global(.mosaic-window) {
   overflow: visible !important;
@@ -349,4 +364,10 @@
 /* devExtrene tooltip */
 :global(.dxc-tooltip) {
   z-index: 9999 !important;
+}
+
+/* react-quill-new input section */
+:global(.ql-container) {
+  flex: 1;
+  overflow: auto;
 }

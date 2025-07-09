@@ -2,12 +2,12 @@
 
 import {
   Dispatch,
-  ChangeEvent,
   SetStateAction,
   ReactNode,
   useEffect,
   useState
 } from 'react';
+import TextEditor from './TextEditor';
 import distyles from './designerId.module.css';
 
 interface TextTypeParameter {
@@ -36,16 +36,12 @@ export default function TextType({
     if (!openModal) return;
     setModalNode(
       <div className={distyles.modalItem} onClick={e => e.stopPropagation()}>
-        <textarea defaultValue={putText} onChange={e => updateText(e)} />
+        <TextEditor value={putText} setValue={setPutText} />
         <div onClick={confirmModal}>확인</div>
       </div>
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openModal, putText]);
-
-  function updateText(e: ChangeEvent<HTMLTextAreaElement>) {
-    setPutText(e.target.value);
-  }
 
   function confirmModal() {
     setWrittenText(putText);
