@@ -32,7 +32,10 @@ const DrawType = [
   'fullstackedbar',
   'line',
   'stackedline',
-  'fullstackedline'
+  'fullstackedline',
+  'area',
+  'stackedarea',
+  'fullstackedarea'
 ] as const;
 
 interface ChartTypeParameter {
