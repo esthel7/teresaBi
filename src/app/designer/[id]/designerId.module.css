@@ -337,6 +337,11 @@
   flex-direction: column;
 }
 
+.viewText {
+  overflow: auto;
+  margin-bottom: 1rem;
+}
+
 /* MosaicWindow header */
 :global(.mosaic-window) {
   overflow: visible !important;

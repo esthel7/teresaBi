@@ -7,7 +7,9 @@ import {
   useEffect,
   useState
 } from 'react';
+import DOMPurify from 'dompurify';
 import TextEditor from './TextEditor';
+import 'react-quill-new/dist/quill.snow.css';
 import distyles from './designerId.module.css';
 
 interface TextTypeParameter {
@@ -33,6 +35,17 @@ export default function TextType({
   const [writtenText, setWrittenText] = useState<string>('');
 
   useEffect(() => {
+    // call this callback for every Element node
+    DOMPurify.addHook('uponSanitizeElement', node => {
+      if (!(node instanceof window.Element)) return;
+      const className = node.getAttribute?.('class') || '';
+      if (className.match(/ql-/)) node.setAttribute('class', className);
+      if (node.hasAttribute('data-list'))
+        node.setAttribute('data-list', node.getAttribute('data-list')!);
+    });
+  }, []);
+
+  useEffect(() => {
     if (!openModal) return;
     setModalNode(
       <div className={distyles.modalItem} onClick={e => e.stopPropagation()}>
@@ -44,7 +57,11 @@ export default function TextType({
   }, [openModal, putText]);
 
   function confirmModal() {
-    setWrittenText(putText);
+    setWrittenText(
+      DOMPurify.sanitize(putText, {
+        ALLOWED_ATTR: ['class', 'data-list', 'src', 'alt', 'width', 'height'] // maintain class, data-list
+      })
+    );
     setOpenModal(false);
   }
 
@@ -75,7 +92,14 @@ export default function TextType({
           </div>
         </div>
       ) : null}
-      {writtenText ? <div>{writtenText}</div> : null}
+      {writtenText ? (
+        <div className={`ql-snow ${distyles.viewText}`}>
+          <div
+            className="ql-editor"
+            dangerouslySetInnerHTML={{ __html: writtenText }}
+          />
+        </div>
+      ) : null}
     </>
   );
 }
