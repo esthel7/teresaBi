@@ -72,8 +72,7 @@ export default function ChartType({
     NumberProperty[0]
   );
   const [dataSource, setDataSource] = useState<
-    Record<string, string | number>[]
-  >([]);
+    Record<string, string | number>[]>([]);
   const ExceptNumberProperty = ['카운트', '고유 카운트'];
   const chartRef = useRef<ChartComponent>(null);
 
@@ -243,8 +242,7 @@ export default function ChartType({
           <div
             key={item}
             className={`${distyles.dataItem} ${item === selectData ? distyles.dataItemSelect : ''}`}
-            onClick={() => setSelectData(item)}
-          >
+            onClick={() => setSelectData(item)}>
             <div>{item}</div>
             <div>{inventoryFormat.current[item]}</div>
           </div>
@@ -311,14 +309,12 @@ export default function ChartType({
       {mosaicProperty === mosaicId && openDataProperty ? (
         <div
           className={distyles.openProperty}
-          onClick={e => e.stopPropagation()}
-        >
+          onClick={e => e.stopPropagation()}>
           <div className={distyles.title}>
             <div>데이터 연결</div>
             <div
               className={distyles.close}
-              onClick={() => setOpenDataProperty(false)}
-            >
+              onClick={() => setOpenDataProperty(false)}>
               X
             </div>
           </div>
@@ -328,16 +324,14 @@ export default function ChartType({
               <div
                 key={idx}
                 className={`${distyles.propertyOpenBox} ${distyles.selectedData} ${xDetail && selectDataIdx === idx ? distyles.selectedDataSelect : ''}`}
-                onClick={() => chooseThisInventory('X', item, idx)}
-              >
+                onClick={() => chooseThisInventory('X', item, idx)}>
                 <div>{item[1]}</div>
                 <div onClick={e => removeInventory(e, 'X', idx)}>X</div>
               </div>
             ))}
             <div
               className={distyles.propertyOpenBox}
-              onClick={() => openDetailProperty('X')}
-            >
+              onClick={() => openDetailProperty('X')}>
               x축 추가
             </div>
           </div>
@@ -347,8 +341,7 @@ export default function ChartType({
               <div
                 key={idx}
                 className={`${distyles.propertyOpenBox} ${distyles.selectedData} ${yDetail && selectDataIdx === idx ? distyles.selectedDataSelect : ''}`}
-                onClick={() => chooseThisInventory('Y', item, idx)}
-              >
+                onClick={() => chooseThisInventory('Y', item, idx)}>
                 <div>
                   {item[1]}
                   {item[2]} ({item[3]})
@@ -358,8 +351,7 @@ export default function ChartType({
             ))}
             <div
               className={distyles.propertyOpenBox}
-              onClick={() => openDetailProperty('Y')}
-            >
+              onClick={() => openDetailProperty('Y')}>
               y축 추가
             </div>
           </div>
@@ -369,16 +361,14 @@ export default function ChartType({
               <div
                 key={idx}
                 className={`${distyles.propertyOpenBox} ${distyles.selectedData} ${seriesDetail && selectDataIdx === idx ? distyles.selectedDataSelect : ''}`}
-                onClick={() => chooseThisInventory('Series', item, idx)}
-              >
+                onClick={() => chooseThisInventory('Series', item, idx)}>
                 <div>{item[1]}</div>
                 <div onClick={e => removeInventory(e, 'Series', idx)}>X</div>
               </div>
             ))}
             <div
               className={distyles.propertyOpenBox}
-              onClick={() => openDetailProperty('Series')}
-            >
+              onClick={() => openDetailProperty('Series')}>
               대분류 추가
             </div>
           </div>
@@ -388,8 +378,7 @@ export default function ChartType({
       {mosaicProperty === mosaicId && openDataProperty && xDetail ? (
         <div
           className={distyles.propertyDetail}
-          onClick={e => e.stopPropagation()}
-        >
+          onClick={e => e.stopPropagation()}>
           <div className={distyles.header} onClick={() => setXDetail(false)}>
             뒤로
           </div>
@@ -407,8 +396,7 @@ export default function ChartType({
       {mosaicProperty === mosaicId && openDataProperty && yDetail ? (
         <div
           className={distyles.propertyDetail}
-          onClick={e => e.stopPropagation()}
-        >
+          onClick={e => e.stopPropagation()}>
           <div className={distyles.header} onClick={() => setYDetail(false)}>
             뒤로
           </div>
@@ -418,8 +406,7 @@ export default function ChartType({
               <div
                 key={item}
                 className={`${distyles.drawType} ${drawType === item ? distyles.drawTypeSelect : ''}`}
-                onClick={() => setDrawType(item)}
-              >
+                onClick={() => setDrawType(item)}>
                 {item}
               </div>
             ))}
@@ -433,8 +420,7 @@ export default function ChartType({
                   <div
                     key={item}
                     className={`${distyles.calculateType} ${calculateType === item ? distyles.calculateTypeSelect : ''}`}
-                    onClick={() => setCalculateType(item)}
-                  >
+                    onClick={() => setCalculateType(item)}>
                     {item}
                   </div>
                 ))
@@ -442,8 +428,7 @@ export default function ChartType({
                   <div
                     key={item}
                     className={`${distyles.calculateType} ${calculateType === item ? distyles.calculateTypeSelect : ''}`}
-                    onClick={() => setCalculateType(item as NumberPropertyType)}
-                  >
+                    onClick={() => setCalculateType(item as NumberPropertyType)}>
                     {item}
                   </div>
                 ))}
@@ -458,12 +443,10 @@ export default function ChartType({
       {mosaicProperty === mosaicId && openDataProperty && seriesDetail ? (
         <div
           className={distyles.propertyDetail}
-          onClick={e => e.stopPropagation()}
-        >
+          onClick={e => e.stopPropagation()}>
           <div
             className={distyles.header}
-            onClick={() => setSeriesDetail(false)}
-          >
+            onClick={() => setSeriesDetail(false)}>
             뒤로
           </div>
           <div className={distyles.drawer} style={{ borderTop: 'none' }}>
@@ -485,8 +468,7 @@ export default function ChartType({
             ref={chartRef}
             title="Teresa BI"
             dataSource={dataSource}
-            redrawOnResize={true}
-          >
+            redrawOnResize={true}>
             <CommonSeriesSettings
               argumentField={[
                 ...seriesInventory.map(item => item[0]),
@@ -497,8 +479,7 @@ export default function ChartType({
               }
               selectionMode={
                 seriesInventory.length ? 'allArgumentPoints' : 'onlyPoint'
-              }
-            />
+              } />
             {yInventory
               .map((item, idx) => [item[0], item[1], item[2], idx])
               .map(([original, alias, drawtype, idx]) => (
@@ -506,8 +487,7 @@ export default function ChartType({
                   key={original + String(idx)}
                   valueField={original + '-' + idx} // y value
                   type={drawtype}
-                  name={alias}
-                />
+                  name={alias} />
               ))}
 
             {/* customize x layer name */}
@@ -515,8 +495,7 @@ export default function ChartType({
               <Label
                 customizeText={({ valueText }: { valueText: string }) =>
                   `X: ${valueText}`
-                }
-              />
+                } />
             </ArgumentAxis>
 
             {/* location of chart property */}

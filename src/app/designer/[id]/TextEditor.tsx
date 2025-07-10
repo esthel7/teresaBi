@@ -83,8 +83,7 @@ export default function TextEditor({
         value={value}
         onChange={setValue}
         theme="snow"
-        className={distyles.textEditor}
-      />
+        className={distyles.textEditor} />
     </div>
   );
 }

@@ -167,8 +167,7 @@ export default function Home() {
               height: '80px',
               width: 'inherit',
               marginTop: '20px'
-            }}
-          />
+            }} />
         </div>
         <main className={distyles.main}>
           <div className={distyles.topBar}>
@@ -216,8 +215,7 @@ export default function Home() {
                     setMosaicPropertyDetail={setMosaicPropertyDetail}
                     openModal={openModal}
                     setOpenModal={setOpenModal}
-                    setModalNode={setModalNode}
-                  />
+                    setModalNode={setModalNode} />
                 </div>
               )}
             </div>
