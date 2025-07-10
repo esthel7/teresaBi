@@ -1,378 +1,65 @@
-.designer {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  border: 1px solid black;
-
-  /* prevent text drag */
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.sideBar {
-  width: 6rem;
-  border-right: 1px solid black;
-}
-
-.sideBarTitle {
-  text-align: center;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  background-color: antiquewhite;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
-}
-
-.sideBarItem {
-  cursor: pointer;
-}
-
-.sideBarItem:hover {
-  background-color: antiquewhite;
-}
-
-.main {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.topBar {
-  height: 3rem;
-  display: flex;
-  border-bottom: 1px solid black;
-  width: 100%;
-}
-
-.topBar > div {
-  display: flex;
-  border-left: 1px solid black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.dashboardBox {
-  padding: 1rem;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  background-color: floralwhite;
-}
-
-.dashboardTop {
-  position: relative;
-  padding: 1rem;
-  padding-top: 0rem;
-}
-
-.dashboardTitle {
-  text-align: center;
-}
-
-.share {
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-.dashboard {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.explain {
-  margin: auto;
-}
-
-.area {
-  height: 100%;
-}
-
-.chart {
-  height: 100%;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-.connectData {
-  color: blue;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.chartPropertyBox {
-  position: absolute;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.3rem;
-  background-color: black;
-  color: white;
-  width: 5rem;
-  z-index: 5;
-  max-height: 100%;
-  height: fit-content;
-  overflow: auto;
-}
-
-.chartPropertyItem {
-  cursor: pointer;
-}
-
-.openProperty {
-  position: absolute;
-  left: 5rem;
-  top: 0;
-  border: 1px solid black;
-  z-index: 10;
-  width: 10rem;
-  max-height: 100%;
-  height: fit-content;
-  overflow: auto;
-  background-color: white;
-}
-
-.openProperty .title {
-  border-bottom: 1px solid black;
-  display: flex;
-  justify-content: space-between;
-  height: 2rem;
-}
-
-.openProperty .close {
-  color: red;
-  cursor: pointer;
-}
-
-.propertySection {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  padding: 0.5rem;
-}
-
-.propertyOpenBox {
-  border: 1px solid black;
-  margin-top: 0.4rem;
-  border-radius: 0.4rem;
-  padding-left: 0.2rem;
-  cursor: pointer;
-}
-
-.propertyOpenBox:hover {
-  background-color: floralwhite;
-}
-
-.selectedData {
-  display: flex;
-  justify-content: space-between;
-}
-
-.selectedDataSelect {
-  background-color: floralwhite;
-}
-
-.propertyDetail {
-  position: absolute;
-  top: 0;
-  left: 15rem;
-  border: 1px solid black;
-  z-index: 10;
-  width: 15rem;
-  max-height: 100%;
-  height: fit-content;
-  overflow: auto;
-  background-color: white;
-}
-
-.propertyDetail .header {
-  height: 2rem;
-  border-bottom: 1px solid black;
-}
-
-.propertyDetail .drawer {
-  border-top: 1px solid black;
-
-  /* text ellipsis */
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  word-break: break-all;
-}
-
-.dataBox {
-  border: 0.5px solid black;
-  margin: 0.5rem;
-}
-
-.dataBox .header {
-  border: 0.5px solid black;
-  height: 2rem;
-}
-
-.dataBox .dataItem {
-  display: flex;
-  justify-content: space-between;
-  border: 0.5px solid black;
-  cursor: pointer;
-}
-
-.dataBox .dataItem:hover {
-  background-color: gainsboro;
-}
-
-.dataBox .dataItemSelect {
-  background-color: gainsboro;
-}
-
-.drawType:hover {
-  background-color: aliceblue;
-}
-
-.drawTypeSelect {
-  background-color: aliceblue;
-}
-
-.calculateType:hover {
-  background-color: honeydew;
-}
-
-.calculateTypeSelect {
-  background-color: honeydew;
-}
-
-.chartBox {
-  flex: 1;
-  min-height: 0;
-  padding-bottom: 0.5rem;
-}
-
-.modal {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.2) !important;
-  z-index: 10000;
-}
-
-.modalItem {
-  background-color: white;
-  position: absolute;
-  width: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2);
-}
-
-.modalHeader {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem;
-  border-bottom: 1px solid black;
-}
-
-.modalHeader .remove {
-  color: red;
-  cursor: pointer;
-}
-
-.modalBody {
-  padding: 1rem;
-  min-width: inherit;
-}
-
-.modalImgBox {
-  max-width: 100%;
-  max-height: 60vh;
-}
-
-.modalImg {
-  max-width: inherit;
-  max-height: inherit;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.modalConfirm {
-  color: red;
-  text-align: right;
-  cursor: pointer;
-}
-
-.mosaicImgBox {
-  max-width: inherit;
-  flex: 1;
-  overflow: hidden;
-}
-
-.mosaicImg {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.textEditorBox {
-  padding: 1rem;
-  max-height: 70vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.textEditor {
-  flex: 1;
-  min-height: 50vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.viewText {
-  overflow: auto;
-  margin-bottom: 1rem;
-}
+.designer { width: 100vw; height: 100vh; display: flex; border: 1px solid black; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+.sideBar { width: 6rem; border-right: 1px solid black; }
+.sideBarTitle { text-align: center; padding-top: 0.5rem; padding-bottom: 0.5rem; background-color: antiquewhite; border-top: 1px solid black; border-bottom: 1px solid black; }
+.sideBarItem { cursor: pointer; }
+.sideBarItem:hover { background-color: antiquewhite; }
+.main { width: 100%; height: 100%; display: flex; flex-direction: column; }
+.topBar { height: 3rem; display: flex; border-bottom: 1px solid black; width: 100%; }
+.topBar > div { display: flex; border-left: 1px solid black; display: flex; justify-content: center; align-items: center; }
+.dashboardBox { padding: 1rem; flex-grow: 1; display: flex; flex-direction: column; background-color: floralwhite; }
+.dashboardTop { position: relative; padding: 1rem; padding-top: 0rem; }
+.dashboardTitle { text-align: center; }
+.share { position: absolute; right: 0; top: 0; }
+.dashboard { flex-grow: 1; display: flex; flex-direction: column; }
+.explain { margin: auto; }
+.area { height: 100%; }
+.chart { height: 100%; position: relative; display: flex; flex-direction: column; }
+.connectData { color: blue; text-decoration: underline; cursor: pointer; }
+.chartPropertyBox { position: absolute; top: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; background-color: black; color: white; width: 5rem; z-index: 5; max-height: 100%; height: fit-content; overflow: auto; }
+.chartPropertyItem { cursor: pointer; }
+.openProperty { position: absolute; left: 5rem; top: 0; border: 1px solid black; z-index: 10; width: 10rem; max-height: 100%; height: fit-content; overflow: auto; background-color: white; }
+.openProperty .title { border-bottom: 1px solid black; display: flex; justify-content: space-between; height: 2rem; }
+.openProperty .close { color: red; cursor: pointer; }
+.propertySection { padding-top: 1rem; padding-bottom: 1rem; padding: 0.5rem; }
+.propertyOpenBox { border: 1px solid black; margin-top: 0.4rem; border-radius: 0.4rem; padding-left: 0.2rem; cursor: pointer; }
+.propertyOpenBox:hover { background-color: floralwhite; }
+.selectedData { display: flex; justify-content: space-between; }
+.selectedDataSelect { background-color: floralwhite; }
+.propertyDetail { position: absolute; top: 0; left: 15rem; border: 1px solid black; z-index: 10; width: 15rem; max-height: 100%; height: fit-content; overflow: auto; background-color: white; }
+.propertyDetail .header { height: 2rem; border-bottom: 1px solid black; }
+.propertyDetail .drawer { border-top: 1px solid black; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; word-break: break-all; }
+.dataBox { border: 0.5px solid black; margin: 0.5rem; }
+.dataBox .header { border: 0.5px solid black; height: 2rem; }
+.dataBox .dataItem { display: flex; justify-content: space-between; border: 0.5px solid black; cursor: pointer; }
+.dataBox .dataItem:hover { background-color: gainsboro; }
+.dataBox .dataItemSelect { background-color: gainsboro; }
+.drawType:hover { background-color: aliceblue; }
+.drawTypeSelect { background-color: aliceblue; }
+.calculateType:hover { background-color: honeydew; }
+.calculateTypeSelect { background-color: honeydew; }
+.chartBox { flex: 1; min-height: 0; padding-bottom: 0.5rem; }
+.modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.2) !important; z-index: 10000; }
+.modalItem { background-color: white; position: absolute; width: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 7px 7px 5px rgba(0, 0, 0, 0.2); }
+.modalHeader { display: flex; justify-content: space-between; padding: 1rem; border-bottom: 1px solid black; }
+.modalHeader .remove { color: red; cursor: pointer; }
+.modalBody { padding: 1rem; min-width: inherit; }
+.modalImgBox { max-width: 100%; max-height: 60vh; }
+.modalImg { max-width: inherit; max-height: inherit; width: 100%; height: 100%; object-fit: contain; }
+.modalConfirm { color: red; text-align: right; cursor: pointer; }
+.mosaicImgBox { max-width: inherit; flex: 1; overflow: hidden; }
+.mosaicImg { width: 100%; height: 100%; object-fit: contain; }
+.textEditorBox { padding: 1rem; max-height: 70vh; overflow: hidden; display: flex; flex-direction: column; }
+.textEditor { flex: 1; min-height: 50vh; display: flex; flex-direction: column; }
+.viewText { overflow: auto; margin-bottom: 1rem; }
 
 /* MosaicWindow header */
-:global(.mosaic-window) {
-  overflow: visible !important;
-}
-
-:global(.mosaic-window-controls) {
-  display: none !important;
-}
-
-:global(.mosaic-window-toolbar) {
-  position: absolute !important;
-  width: fit-content;
-  top: -0.5rem;
-  left: 50%;
-  padding-right: 15px;
-  transform: translateX(-50%);
-  background-color: black !important;
-  color: white;
-}
-
-:global(.hide-mosaic-header .mosaic-window-toolbar) {
-  display: none !important;
-}
+:global(.mosaic-window) { overflow: visible !important; }
+:global(.mosaic-window-controls) { display: none !important; }
+:global(.mosaic-window-toolbar) { position: absolute !important; width: fit-content; top: -0.5rem; left: 50%; padding-right: 15px; transform: translateX(-50%); background-color: black !important; color: white; }
+:global(.hide-mosaic-header .mosaic-window-toolbar) { display: none !important; }
 
 /* devExtrene tooltip */
-:global(.dxc-tooltip) {
-  z-index: 9999 !important;
-}
+:global(.dxc-tooltip) { z-index: 9999 !important; }
 
 /* react-quill-new input section */
-:global(.ql-container) {
-  flex: 1;
-  overflow: auto;
-}
+:global(.ql-container) { flex: 1; overflow: auto; }
