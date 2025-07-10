@@ -9,8 +9,12 @@
     "lint": "next lint"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,css}": [
+    "*.{ts,tsx,js,jsx}": [
       "prettier --write"
+    ],
+    "*.css": [
+      "prettier --write",
+      "node ./format-staged-css.js"
     ]
   },
   "dependencies": {
@@ -19,6 +23,8 @@
     "dompurify": "^3.2.6",
     "mammoth": "^1.9.1",
     "next": "15.3.4",
+    "postcss": "^8.5.6",
+    "postcss-scss": "^4.0.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-mosaic-component": "^6.1.1",
