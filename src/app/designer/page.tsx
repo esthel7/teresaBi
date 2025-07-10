@@ -8,8 +8,7 @@ const DataFormat = ['Excel', 'JSON', 'Database'] as const;
 
 export default function Home() {
   const [connectDataFormat, setConnectDataFormat] = useState<
-    (typeof DataFormat)[number] | null
-  >(null);
+    (typeof DataFormat)[number] | null>(null);
   const [dataSources] = useState(['1번 데이터소스', '2번 데이터소스']);
   const inventory = useRef<Record<string, number>>({});
   const originalDataSource = useRef<(string | number)[][]>([]);
@@ -77,8 +76,7 @@ export default function Home() {
               <div
                 key={item}
                 className={dstyles.dataItem}
-                onClick={() => connectFormat(item)}
-              >
+                onClick={() => connectFormat(item)}>
                 {item}
               </div>
             ))}
@@ -97,14 +95,12 @@ export default function Home() {
       {connectDataFormat === 'Excel' ? (
         <div
           className={dstyles.modal}
-          onClick={() => setConnectDataFormat(null)}
-        >
+          onClick={() => setConnectDataFormat(null)}>
           <div className={dstyles.modalItem} onClick={e => e.stopPropagation()}>
             <input
               type="file"
               accept=".xlsx, .xls"
-              onChange={handleFileUpload}
-            />
+              onChange={handleFileUpload} />
             <div className={dstyles.modalBottom}>
               <div onClick={() => setConnectDataFormat(null)}>취소</div>
               <div className={dstyles.modalBottomRight}>

@@ -112,36 +112,31 @@ export default function Chart({
           key={id}
           path={path}
           title={'-'}
-          className={mosaicProperty === id ? '' : 'hide-mosaic-header'}
-        >
+          className={mosaicProperty === id ? '' : 'hide-mosaic-header'}>
           <div className={distyles.chart} onClick={e => openProperty(e, id)}>
             <div>{id.split('-')[0]}</div>
             <div
               className={distyles.connectData}
-              onClick={e => openDataConnectSection(e, id)}
-            >
+              onClick={e => openDataConnectSection(e, id)}>
               데이터 연결
             </div>
             {mosaicProperty === id ? (
               <div className={distyles.chartPropertyBox}>
                 <div
                   className={distyles.chartPropertyItem}
-                  onClick={changeProperty}
-                >
+                  onClick={changeProperty}>
                   길이조절
                 </div>
                 {mosaicPropertyDetail ? (
                   <>
                     <div
                       className={distyles.chartPropertyItem}
-                      onClick={e => openDataConnectSection(e, id)}
-                    >
+                      onClick={e => openDataConnectSection(e, id)}>
                       데이터 연결
                     </div>
                     <div
                       className={distyles.chartPropertyItem}
-                      onClick={() => removeMosaic(id)}
-                    >
+                      onClick={() => removeMosaic(id)}>
                       X
                     </div>
                   </>
@@ -156,8 +151,7 @@ export default function Chart({
                 mosaicProperty={mosaicProperty}
                 mosaicId={id}
                 openDataProperty={openDataProperty}
-                setOpenDataProperty={setOpenDataProperty}
-              />
+                setOpenDataProperty={setOpenDataProperty} />
             ) : null}
             {id.split('-')[0] === 'text' ? (
               <TextType
@@ -167,8 +161,7 @@ export default function Chart({
                 setOpenDataProperty={setOpenDataProperty}
                 openModal={openModal}
                 setOpenModal={setOpenModal}
-                setModalNode={setModalNode}
-              />
+                setModalNode={setModalNode} />
             ) : null}
             {id.split('-')[0] === 'img' ? (
               <ImgType
@@ -178,15 +171,13 @@ export default function Chart({
                 setOpenDataProperty={setOpenDataProperty}
                 openModal={openModal}
                 setOpenModal={setOpenModal}
-                setModalNode={setModalNode}
-              />
+                setModalNode={setModalNode} />
             ) : null}
           </div>
         </MosaicWindow>
       )}
       value={mosaicValue}
       onChange={setMosaicValue}
-      className=""
-    />
+      className="" />
   );
 }

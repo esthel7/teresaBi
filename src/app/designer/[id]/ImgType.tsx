@@ -90,14 +90,12 @@ export default function ImgType({
       {mosaicProperty === mosaicId && openDataProperty ? (
         <div
           className={distyles.openProperty}
-          onClick={e => e.stopPropagation()}
-        >
+          onClick={e => e.stopPropagation()}>
           <div className={distyles.title}>
             <div>속성</div>
             <div
               className={distyles.close}
-              onClick={() => setOpenDataProperty(false)}
-            >
+              onClick={() => setOpenDataProperty(false)}>
               X
             </div>
           </div>
@@ -105,8 +103,7 @@ export default function ImgType({
             <h5>이미지</h5>
             <div
               className={distyles.propertyOpenBox}
-              onClick={() => setOpenModal(true)}
-            >
+              onClick={() => setOpenModal(true)}>
               이미지 업로드
             </div>
           </div>
@@ -116,8 +113,7 @@ export default function ImgType({
               <div
                 key={item}
                 className={`${distyles.propertyOpenBox} ${distyles.selectedData}`}
-                onClick={() => setImgPosition(item)}
-              >
+                onClick={() => setImgPosition(item)}>
                 {item}
               </div>
             ))}
@@ -131,8 +127,7 @@ export default function ImgType({
             className={distyles.mosaicImg}
             src={receivedImg}
             alt="Image"
-            style={{ objectPosition: imgPosition }}
-          />
+            style={{ objectPosition: imgPosition }} />
         ) : null}
       </div>
     </>

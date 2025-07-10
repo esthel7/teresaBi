@@ -88,14 +88,12 @@ export default function TextType({
       {mosaicProperty === mosaicId && openDataProperty ? (
         <div
           className={distyles.openProperty}
-          onClick={e => e.stopPropagation()}
-        >
+          onClick={e => e.stopPropagation()}>
           <div className={distyles.title}>
             <div>속성</div>
             <div
               className={distyles.close}
-              onClick={() => setOpenDataProperty(false)}
-            >
+              onClick={() => setOpenDataProperty(false)}>
               X
             </div>
           </div>
@@ -103,8 +101,7 @@ export default function TextType({
             <h5>텍스트</h5>
             <div
               className={distyles.propertyOpenBox}
-              onClick={() => setOpenModal(true)}
-            >
+              onClick={() => setOpenModal(true)}>
               텍스트 편집
             </div>
           </div>
@@ -114,8 +111,7 @@ export default function TextType({
         <div className={`ql-snow ${distyles.viewText}`}>
           <div
             className="ql-editor"
-            dangerouslySetInnerHTML={{ __html: writtenText }}
-          />
+            dangerouslySetInnerHTML={{ __html: writtenText }} />
         </div>
       ) : null}
     </>
