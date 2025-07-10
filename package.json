@@ -10,7 +10,8 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
-      "prettier --write"
+      "prettier --write",
+      "node ./format-staged-xml.js"
     ],
     "*.css": [
       "prettier --write",
