@@ -53,6 +53,8 @@ interface ChartTypeParameter {
   mosaicId: string;
   openDataProperty: boolean;
   setOpenDataProperty: Dispatch<SetStateAction<boolean>>;
+  openShareProperty: boolean;
+  setOpenShareProperty: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ChartType({
@@ -62,7 +64,9 @@ export default function ChartType({
   mosaicProperty,
   mosaicId,
   openDataProperty,
-  setOpenDataProperty
+  setOpenDataProperty,
+  openShareProperty,
+  setOpenShareProperty
 }: ChartTypeParameter) {
   const [xInventory, setXInventory] = useState<string[][]>([]);
   const [yInventory, setYInventory] = useState<string[][]>([]);
@@ -464,6 +468,19 @@ export default function ChartType({
             <h5>데이터명 바꾸기</h5>
             <div>데이터명</div>
           </div>
+        </div>
+      ) : null}
+
+      {mosaicProperty === mosaicId && openShareProperty ? (
+        <div
+          className={distyles.openProperty}
+          onClick={e => e.stopPropagation()}>
+          <div>
+            <div className={distyles.propertyOpenBox}>pdf</div>
+            <div className={distyles.propertyOpenBox}>이미지</div>
+            <div className={distyles.propertyOpenBox}>excel</div>
+          </div>
+          <div onClick={() => setOpenShareProperty(false)}>닫기</div>
         </div>
       ) : null}
 

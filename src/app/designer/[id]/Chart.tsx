@@ -52,6 +52,7 @@ export default function Chart({
   setModalNode
 }: ChartParameter) {
   const [openDataProperty, setOpenDataProperty] = useState(false);
+  const [openShareProperty, setOpenShareProperty] = useState(false);
 
   useEffect(() => {
     if (!inventory.current.length) {
@@ -91,6 +92,7 @@ export default function Chart({
 
   function openProperty(e: MouseEvent<HTMLDivElement>, settingId: string) {
     setOpenDataProperty(false);
+    setOpenShareProperty(false);
     setMosaicProperty(settingId);
     e.stopPropagation();
   }
@@ -102,6 +104,15 @@ export default function Chart({
     setMosaicProperty(settingId);
     setMosaicPropertyDetail(true);
     setOpenDataProperty(true);
+    setOpenShareProperty(false);
+    e.stopPropagation();
+  }
+
+  function openShareSection(e: MouseEvent<HTMLDivElement>, settingId: string) {
+    setMosaicProperty(settingId);
+    setMosaicPropertyDetail(true);
+    setOpenDataProperty(false);
+    setOpenShareProperty(true);
     e.stopPropagation();
   }
 
@@ -136,6 +147,11 @@ export default function Chart({
                     </div>
                     <div
                       className={distyles.chartPropertyItem}
+                      onClick={e => openShareSection(e, id)}>
+                      공유
+                    </div>
+                    <div
+                      className={distyles.chartPropertyItem}
                       onClick={() => removeMosaic(id)}>
                       X
                     </div>
@@ -151,7 +167,9 @@ export default function Chart({
                 mosaicProperty={mosaicProperty}
                 mosaicId={id}
                 openDataProperty={openDataProperty}
-                setOpenDataProperty={setOpenDataProperty} />
+                setOpenDataProperty={setOpenDataProperty}
+                openShareProperty={openShareProperty}
+                setOpenShareProperty={setOpenShareProperty} />
             ) : null}
             {id.split('-')[0] === 'text' ? (
               <TextType
