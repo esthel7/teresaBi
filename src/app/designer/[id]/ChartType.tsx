@@ -30,6 +30,7 @@ const DrawType = [
   'bar',
   'stackedbar',
   'fullstackedbar',
+  'point',
   'line',
   'stackedline',
   'fullstackedline',
@@ -486,7 +487,8 @@ export default function ChartType({
                 <Series
                   key={original + String(idx)}
                   valueField={original + '-' + idx} // y value
-                  type={drawtype}
+                  type={drawtype === 'point' ? 'line' : drawtype}
+                  width={drawtype === 'point' ? 0 : 2}
                   name={alias} />
               ))}
 
