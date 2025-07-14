@@ -34,9 +34,15 @@ const DrawType = [
   'line',
   'stackedline',
   'fullstackedline',
+  'stepline',
+  'spline',
   'area',
   'stackedarea',
-  'fullstackedarea'
+  'fullstackedarea',
+  'steparea',
+  'splinearea',
+  'stackedsplinearea',
+  'fullstackedsplinearea'
 ] as const;
 
 interface ChartTypeParameter {
