@@ -21,6 +21,8 @@ import {
   Tooltip,
   ZoomAndPan
 } from 'devextreme-react/chart';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { NumberProperty, NumberPropertyType } from '@/constants';
 import distyles from './designerId.module.css';
 import { calculate } from '@/utils/calculate';
@@ -51,6 +53,7 @@ interface ChartTypeParameter {
   originalDataSource: RefObject<(string | number)[][]>;
   mosaicProperty: string | null;
   mosaicId: string;
+  chartBoxRef: RefObject<HTMLDivElement | null>;
   openDataProperty: boolean;
   setOpenDataProperty: Dispatch<SetStateAction<boolean>>;
   openShareProperty: boolean;
@@ -63,6 +66,7 @@ export default function ChartType({
   inventoryFormat,
   mosaicProperty,
   mosaicId,
+  chartBoxRef,
   openDataProperty,
   setOpenDataProperty,
   openShareProperty,
@@ -315,6 +319,35 @@ export default function ChartType({
         };
   }
 
+  async function savePdf() {
+    const element = chartBoxRef.current;
+    if (!element) return;
+
+    const shareSection = document.getElementById('shareSection') as HTMLElement;
+    const focusMosaicBox = document.getElementById(
+      'focusMosaicBox'
+    ) as HTMLElement;
+    shareSection.style.display = 'none';
+    focusMosaicBox.style.display = 'none';
+
+    const canvas = await html2canvas(element);
+    const componentWidth = element.offsetWidth;
+    const componentHeight = element.offsetHeight;
+    const orientation = componentWidth >= componentHeight ? 'l' : 'p';
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({
+      orientation,
+      unit: 'px'
+    });
+    pdf.internal.pageSize.width = componentWidth;
+    pdf.internal.pageSize.height = componentHeight;
+    pdf.addImage(imgData, 'PNG', 0, 0, componentWidth, componentHeight);
+    pdf.save('Chart.pdf');
+
+    shareSection.style.display = '';
+    focusMosaicBox.style.display = '';
+  }
+
   return (
     <>
       {mosaicProperty === mosaicId && openDataProperty ? (
@@ -473,10 +506,13 @@ export default function ChartType({
 
       {mosaicProperty === mosaicId && openShareProperty ? (
         <div
+          id="shareSection"
           className={distyles.openProperty}
           onClick={e => e.stopPropagation()}>
           <div>
-            <div className={distyles.propertyOpenBox}>pdf</div>
+            <div className={distyles.propertyOpenBox} onClick={savePdf}>
+              pdf
+            </div>
             <div className={distyles.propertyOpenBox}>이미지</div>
             <div className={distyles.propertyOpenBox}>excel</div>
           </div>

@@ -7,7 +7,8 @@ import {
   useState,
   useEffect,
   RefObject,
-  ReactNode
+  ReactNode,
+  useRef
 } from 'react';
 import { Mosaic, MosaicWindow, MosaicNode } from 'react-mosaic-component';
 import 'react-mosaic-component/react-mosaic-component.css';
@@ -53,6 +54,7 @@ export default function Chart({
 }: ChartParameter) {
   const [openDataProperty, setOpenDataProperty] = useState(false);
   const [openShareProperty, setOpenShareProperty] = useState(false);
+  const chartBoxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!inventory.current.length) {
@@ -124,7 +126,10 @@ export default function Chart({
           path={path}
           title={'-'}
           className={mosaicProperty === id ? '' : 'hide-mosaic-header'}>
-          <div className={distyles.chart} onClick={e => openProperty(e, id)}>
+          <div
+            className={distyles.chart}
+            ref={chartBoxRef}
+            onClick={e => openProperty(e, id)}>
             <div>{id.split('-')[0]}</div>
             <div
               className={distyles.connectData}
@@ -132,7 +137,7 @@ export default function Chart({
               데이터 연결
             </div>
             {mosaicProperty === id ? (
-              <div className={distyles.chartPropertyBox}>
+              <div id="focusMosaicBox" className={distyles.chartPropertyBox}>
                 <div
                   className={distyles.chartPropertyItem}
                   onClick={changeProperty}>
@@ -166,6 +171,7 @@ export default function Chart({
                 originalDataSource={originalDataSource}
                 mosaicProperty={mosaicProperty}
                 mosaicId={id}
+                chartBoxRef={chartBoxRef}
                 openDataProperty={openDataProperty}
                 setOpenDataProperty={setOpenDataProperty}
                 openShareProperty={openShareProperty}
