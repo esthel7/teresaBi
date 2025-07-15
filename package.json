@@ -22,6 +22,7 @@
     "devextreme": "^22.1.14",
     "devextreme-react": "^22.1.14",
     "dompurify": "^3.2.6",
+    "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.1",
     "mammoth": "^1.9.1",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/file-saver": "^2.0.7",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
