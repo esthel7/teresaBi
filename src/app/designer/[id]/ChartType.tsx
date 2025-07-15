@@ -23,6 +23,8 @@ import {
 } from 'devextreme-react/chart';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 import { NumberProperty, NumberPropertyType } from '@/constants';
 import distyles from './designerId.module.css';
 import { calculate } from '@/utils/calculate';
@@ -360,6 +362,27 @@ export default function ChartType({
     focusMosaicBox.style.display = '';
   }
 
+  function saveExcel() {
+    if (!dataSource.length) {
+      alert('차트가 그려지지 않았습니다.');
+      return;
+    }
+    const keys = Object.keys(dataSource[0]);
+    const transformData: (string | number | Date)[][] = keys.map(key => {
+      const row: (string | number | Date)[] = [key];
+      dataSource.forEach(item => row.push(item[key]));
+      return row;
+    });
+    const worksheet = XLSX.utils.aoa_to_sheet(transformData); // [][] to sheet
+    const workbook = XLSX.utils.book_new(); // new excel
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'data'); // append sheet named 'data'
+    const buffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([buffer], {
+      type: 'application/octet-stream'
+    });
+    saveAs(blob, 'data.xlsx');
+  }
+
   return (
     <>
       {mosaicProperty === mosaicId && openDataProperty ? (
@@ -532,7 +555,9 @@ export default function ChartType({
               onClick={() => saveImg('png')}>
               이미지
             </div>
-            <div className={distyles.propertyOpenBox}>excel</div>
+            <div className={distyles.propertyOpenBox} onClick={saveExcel}>
+              excel
+            </div>
           </div>
           <div onClick={() => setOpenShareProperty(false)}>닫기</div>
         </div>
