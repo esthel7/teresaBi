@@ -319,7 +319,7 @@ export default function ChartType({
         };
   }
 
-  async function savePdf() {
+  async function saveImg(flag: 'pdf' | 'png') {
     const element = chartBoxRef.current;
     if (!element) return;
 
@@ -331,18 +331,30 @@ export default function ChartType({
     focusMosaicBox.style.display = 'none';
 
     const canvas = await html2canvas(element);
-    const componentWidth = element.offsetWidth;
-    const componentHeight = element.offsetHeight;
-    const orientation = componentWidth >= componentHeight ? 'l' : 'p';
     const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({
-      orientation,
-      unit: 'px'
-    });
-    pdf.internal.pageSize.width = componentWidth;
-    pdf.internal.pageSize.height = componentHeight;
-    pdf.addImage(imgData, 'PNG', 0, 0, componentWidth, componentHeight);
-    pdf.save('Chart.pdf');
+
+    if (flag === 'png') {
+      const link = document.createElement('a');
+      link.href = imgData;
+      link.download = 'Chart.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    if (flag === 'pdf') {
+      const componentWidth = element.offsetWidth;
+      const componentHeight = element.offsetHeight;
+      const orientation = componentWidth >= componentHeight ? 'l' : 'p';
+      const pdf = new jsPDF({
+        orientation,
+        unit: 'px'
+      });
+      pdf.internal.pageSize.width = componentWidth;
+      pdf.internal.pageSize.height = componentHeight;
+      pdf.addImage(imgData, 'PNG', 0, 0, componentWidth, componentHeight);
+      pdf.save('Chart.pdf');
+    }
 
     shareSection.style.display = '';
     focusMosaicBox.style.display = '';
@@ -510,10 +522,16 @@ export default function ChartType({
           className={distyles.openProperty}
           onClick={e => e.stopPropagation()}>
           <div>
-            <div className={distyles.propertyOpenBox} onClick={savePdf}>
+            <div
+              className={distyles.propertyOpenBox}
+              onClick={() => saveImg('pdf')}>
               pdf
             </div>
-            <div className={distyles.propertyOpenBox}>이미지</div>
+            <div
+              className={distyles.propertyOpenBox}
+              onClick={() => saveImg('png')}>
+              이미지
+            </div>
             <div className={distyles.propertyOpenBox}>excel</div>
           </div>
           <div onClick={() => setOpenShareProperty(false)}>닫기</div>
