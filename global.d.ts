@@ -4,5 +4,6 @@ declare type ChartType =
   | 'pie'
   | 'tree'
   | 'scatter'
+  | 'financial'
   | 'text'
   | 'img';

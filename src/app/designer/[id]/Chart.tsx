@@ -13,6 +13,7 @@ import {
 import { Mosaic, MosaicWindow, MosaicNode } from 'react-mosaic-component';
 import 'react-mosaic-component/react-mosaic-component.css';
 import ChartType from './ChartType';
+import FinancialType from './FinancialType';
 import TextType from './TextType';
 import ImgType from './ImgType';
 import distyles from './designerId.module.css';
@@ -166,6 +167,19 @@ export default function Chart({
             ) : null}
             {id.split('-')[0] === 'chart' ? (
               <ChartType
+                inventory={inventory}
+                inventoryFormat={inventoryFormat}
+                originalDataSource={originalDataSource}
+                mosaicProperty={mosaicProperty}
+                mosaicId={id}
+                chartBoxRef={chartBoxRef}
+                openDataProperty={openDataProperty}
+                setOpenDataProperty={setOpenDataProperty}
+                openShareProperty={openShareProperty}
+                setOpenShareProperty={setOpenShareProperty} />
+            ) : null}
+            {id.split('-')[0] === 'financial' ? (
+              <FinancialType
                 inventory={inventory}
                 inventoryFormat={inventoryFormat}
                 originalDataSource={originalDataSource}

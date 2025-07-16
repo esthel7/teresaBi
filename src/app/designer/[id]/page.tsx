@@ -125,6 +125,9 @@ export default function Home() {
             <div className={distyles.sideBarItem} data-type="scatter">
               분산형
             </div>
+            <div className={distyles.sideBarItem} data-type="financial">
+              금융
+            </div>
             <div className={distyles.sideBarItem} data-type="text">
               텍스트
             </div>
