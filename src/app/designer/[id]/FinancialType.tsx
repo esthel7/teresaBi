@@ -16,6 +16,8 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { DateProperty, DatePropertyType } from '@/constants';
+import { dateFormat } from '@/utils/dateFormat';
 import distyles from './designerId.module.css';
 
 type NeededDataType = 'Date' | 'Value';
@@ -52,6 +54,7 @@ export default function FinancialType({
   const [valueDetail, setValueDetail] = useState(false);
   const [selectData, setSelectData] = useState<string | null>(null);
   const [selectDataIdx, setSelectDataIdx] = useState<number>(-1);
+  const [dateType, setDateType] = useState<DatePropertyType>(DateProperty[0]);
   const [drawType, setDrawType] = useState<(typeof DrawType)[number]>(
     DrawType[0]
   );
@@ -91,8 +94,10 @@ export default function FinancialType({
     );
     sortedOriginalDataSource.forEach(item => {
       let formatIdx = 0;
-      const keyword = item[inventory.current[datekey]];
-      // keyword 변환 년, 년월, 년월일, ...
+      const keyword = dateFormat(
+        dateType,
+        item[inventory.current[datekey]] as string
+      );
       if (keyword in match) formatIdx = match[keyword];
       else {
         match[keyword] = cnt;
@@ -120,7 +125,7 @@ export default function FinancialType({
     });
     console.log('check graph data', final);
     setDataSource(final);
-  }, [inventory, originalDataSource, dateInventory, valueInventory]);
+  }, [inventory, originalDataSource, dateInventory, valueInventory, dateType]);
 
   // useEffect(() => {
   //   if (!dataSource.length) return;
@@ -360,7 +365,14 @@ export default function FinancialType({
             <h5>데이터 선택</h5>
             <ViewAllData />
             <h5>그룹 간격</h5>
-            {/* 년월일 ... */}
+            {DateProperty.map(item => (
+              <div
+                key={item}
+                className={`${distyles.drawType} ${dateType === item ? distyles.drawTypeSelect : ''}`}
+                onClick={() => setDateType(item)}>
+                {item}
+              </div>
+            ))}
           </div>
           <div className={distyles.drawer}>
             <h5>데이터명 바꾸기</h5>
