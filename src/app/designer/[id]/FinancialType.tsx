@@ -6,12 +6,23 @@ import {
   useState,
   useEffect,
   RefObject,
-  // useRef,
+  useRef,
   MouseEvent
 } from 'react';
-// import {
-//   Chart as ChartComponent,
-// } from 'devextreme-react/chart';
+import {
+  Chart,
+  Chart as ChartComponent,
+  CommonSeriesSettings,
+  Series,
+  Reduction,
+  ArgumentAxis,
+  Label,
+  Format,
+  ValueAxis,
+  Title,
+  Export,
+  Tooltip
+} from 'devextreme-react/chart';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
@@ -60,7 +71,7 @@ export default function FinancialType({
   );
   const [dataSource, setDataSource] = useState<
     Record<string, string | number>[]>([]);
-  // const chartRef = useRef<ChartComponent>(null);
+  const chartRef = useRef<ChartComponent>(null);
 
   useEffect(() => {
     if (openDataProperty) return;
@@ -127,23 +138,23 @@ export default function FinancialType({
     setDataSource(final);
   }, [inventory, originalDataSource, dateInventory, valueInventory, dateType]);
 
-  // useEffect(() => {
-  //   if (!dataSource.length) return;
-  //   const parent = document.getElementById('chartBox');
-  //   if (!parent || !chartRef.current) return;
-  //   let timeout: ReturnType<typeof setTimeout> | null = null;
-  //   const observer = new ResizeObserver(() => {
-  //     if (timeout) clearTimeout(timeout);
-  //     timeout = setTimeout(() => {
-  //       chartRef.current?.instance?.render();
-  //     }, 300); // render after 300ms from stoppipng resizing
-  //   });
-  //   observer.observe(parent);
-  //   return () => {
-  //     observer.disconnect();
-  //     if (timeout) clearTimeout(timeout);
-  //   };
-  // }, [dataSource]);
+  useEffect(() => {
+    if (!dataSource.length) return;
+    const parent = document.getElementById('chartBox');
+    if (!parent || !chartRef.current) return;
+    let timeout: ReturnType<typeof setTimeout> | null = null;
+    const observer = new ResizeObserver(() => {
+      if (timeout) clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        chartRef.current?.instance?.render();
+      }, 300); // render after 300ms from stoppipng resizing
+    });
+    observer.observe(parent);
+    return () => {
+      observer.disconnect();
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [dataSource]);
 
   function openDetailProperty(flag: NeededDataType) {
     setDateDetail(false);
@@ -178,6 +189,7 @@ export default function FinancialType({
     const left = selectedInventory.slice(0, idx);
     const right = selectedInventory.slice(idx + 1);
     setSelectedInventory([...left, ...right]);
+    setDataSource([]);
     setSelectData(null);
     setSelectDataIdx(-1);
   }
@@ -301,6 +313,20 @@ export default function FinancialType({
       type: 'application/octet-stream'
     });
     saveAs(blob, 'data.xlsx');
+  }
+
+  function customizeTooltip(arg: {
+    openValue: number;
+    closeValue: number;
+    highValue: number;
+    lowValue: number;
+  }) {
+    return {
+      text: `Open: ${arg.openValue}<br/>
+Close: ${arg.closeValue}<br/>
+High: ${arg.highValue}<br/>
+Low: ${arg.lowValue}<br/>`
+    };
   }
 
   return (
@@ -437,7 +463,42 @@ export default function FinancialType({
       ) : null}
 
       <div id="chartBox" className={distyles.chartBox}>
-        {dataSource.length ? <>Chart</> : null}
+        {dataSource.length ? (
+          <Chart
+            id="chart"
+            ref={chartRef}
+            title="Stock"
+            dataSource={dataSource}>
+            <CommonSeriesSettings
+              argumentField={dateInventory[0][0]}
+              type={drawType} />
+            <Series
+              name={valueInventory[0][1]}
+              openValueField="open"
+              highValueField="high"
+              lowValueField="low"
+              closeValueField="close">
+              <Reduction color="red" />
+            </Series>
+
+            {/* x value */}
+            <ArgumentAxis argumentType="string" />
+
+            {/* y value interval */}
+            <ValueAxis tickInterval={1}>
+              <Title text="Number View" />
+              <Label>
+                <Format precision={0} />
+              </Label>
+            </ValueAxis>
+
+            <Export enabled={true} />
+            <Tooltip
+              enabled={true}
+              customizeTooltip={customizeTooltip}
+              location="edge" />
+          </Chart>
+        ) : null}
       </div>
     </>
   );
