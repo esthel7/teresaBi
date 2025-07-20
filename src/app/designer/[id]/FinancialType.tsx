@@ -29,6 +29,7 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { DateProperty, DatePropertyType } from '@/constants';
 import { dateFormat } from '@/utils/dateFormat';
+import { useMosaicStore } from '@/store/mosaicStore';
 import distyles from './designerId.module.css';
 
 type NeededDataType = 'Date' | 'Value';
@@ -38,7 +39,6 @@ interface FinancialTypeParameter {
   inventory: RefObject<Record<string, number>>;
   inventoryFormat: RefObject<Record<string, string>>;
   originalDataSource: RefObject<(string | number)[][]>;
-  mosaicProperty: string | null;
   mosaicId: string;
   chartBoxRef: RefObject<HTMLDivElement | null>;
   openDataProperty: boolean;
@@ -51,7 +51,6 @@ export default function FinancialType({
   inventory,
   originalDataSource,
   inventoryFormat,
-  mosaicProperty,
   mosaicId,
   chartBoxRef,
   openDataProperty,
@@ -59,6 +58,7 @@ export default function FinancialType({
   openShareProperty,
   setOpenShareProperty
 }: FinancialTypeParameter) {
+  const { mosaicProperty } = useMosaicStore();
   const [dateInventory, setDateInventory] = useState<string[][]>([]);
   const [valueInventory, setValueInventory] = useState<string[][]>([]);
   const [dateDetail, setDateDetail] = useState(false);

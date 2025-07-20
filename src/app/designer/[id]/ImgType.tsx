@@ -8,12 +8,12 @@ import {
   useState,
   useEffect
 } from 'react';
+import { useMosaicStore } from '@/store/mosaicStore';
 import distyles from './designerId.module.css';
 
 const ImgPosition = ['bottom', ' top', 'left', 'right', 'center'] as const;
 
 interface ImgTypeParameter {
-  mosaicProperty: string | null;
   mosaicId: string;
   openDataProperty: boolean;
   setOpenDataProperty: Dispatch<SetStateAction<boolean>>;
@@ -23,7 +23,6 @@ interface ImgTypeParameter {
 }
 
 export default function ImgType({
-  mosaicProperty,
   mosaicId,
   openDataProperty,
   setOpenDataProperty,
@@ -31,6 +30,7 @@ export default function ImgType({
   setOpenModal,
   setModalNode
 }: ImgTypeParameter) {
+  const { mosaicProperty } = useMosaicStore();
   const [modalImg, setModalImg] = useState<string | null>(null);
   const [receivedImg, setReceivedImg] = useState<string | null>(null);
   const [imgPosition, setImgPosition] =

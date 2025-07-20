@@ -26,8 +26,9 @@ import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { NumberProperty, NumberPropertyType } from '@/constants';
-import distyles from './designerId.module.css';
 import { calculate } from '@/utils/calculate';
+import { useMosaicStore } from '@/store/mosaicStore';
+import distyles from './designerId.module.css';
 
 type NeededDataType = 'X' | 'Y' | 'Series';
 const DrawType = [
@@ -53,7 +54,6 @@ interface ChartTypeParameter {
   inventory: RefObject<Record<string, number>>;
   inventoryFormat: RefObject<Record<string, string>>;
   originalDataSource: RefObject<(string | number)[][]>;
-  mosaicProperty: string | null;
   mosaicId: string;
   chartBoxRef: RefObject<HTMLDivElement | null>;
   openDataProperty: boolean;
@@ -66,7 +66,6 @@ export default function ChartType({
   inventory,
   originalDataSource,
   inventoryFormat,
-  mosaicProperty,
   mosaicId,
   chartBoxRef,
   openDataProperty,
@@ -74,6 +73,7 @@ export default function ChartType({
   openShareProperty,
   setOpenShareProperty
 }: ChartTypeParameter) {
+  const { mosaicProperty } = useMosaicStore();
   const [xInventory, setXInventory] = useState<string[][]>([]);
   const [yInventory, setYInventory] = useState<string[][]>([]);
   const [seriesInventory, setSeriesInventory] = useState<string[][]>([]);

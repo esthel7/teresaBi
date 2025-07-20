@@ -12,10 +12,10 @@ import DOMPurify from 'dompurify';
 import mammoth from 'mammoth';
 import TextEditor from './TextEditor';
 import 'react-quill-new/dist/quill.snow.css';
+import { useMosaicStore } from '@/store/mosaicStore';
 import distyles from './designerId.module.css';
 
 interface TextTypeParameter {
-  mosaicProperty: string | null;
   mosaicId: string;
   openDataProperty: boolean;
   setOpenDataProperty: Dispatch<SetStateAction<boolean>>;
@@ -25,7 +25,6 @@ interface TextTypeParameter {
 }
 
 export default function TextType({
-  mosaicProperty,
   mosaicId,
   openDataProperty,
   setOpenDataProperty,
@@ -33,6 +32,7 @@ export default function TextType({
   setOpenModal,
   setModalNode
 }: TextTypeParameter) {
+  const { mosaicProperty } = useMosaicStore();
   const [putText, setPutText] = useState<string>('');
   const [writtenText, setWrittenText] = useState<string>('');
 

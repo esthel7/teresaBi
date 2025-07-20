@@ -5,6 +5,7 @@ import { MosaicNode } from 'react-mosaic-component';
 import * as XLSX from 'xlsx';
 import distyles from './designerId.module.css';
 import 'react-mosaic-component/react-mosaic-component.css';
+import { useMosaicStore } from '@/store/mosaicStore';
 import Chart from './Chart';
 
 export default function Home() {
@@ -14,11 +15,8 @@ export default function Home() {
   const [dashboardTitle] = useState('새 대시보드');
   const [chartCnt, setChartCnt] = useState(0);
   const [chartViews, setChartViews] = useState<string[]>([]);
-  const [mosaicValue, setMosaicValue] = useState<MosaicNode<string> | null>(
-    null
-  );
-  const [mosaicProperty, setMosaicProperty] = useState<string | null>(null);
-  const [mosaicPropertyDetail, setMosaicPropertyDetail] = useState(true);
+  const { setMosaicValue, setMosaicProperty, setMosaicPropertyDetail } =
+    useMosaicStore();
   const [openModal, setOpenModal] = useState(false);
   const [modalNode, setModalNode] = useState<ReactNode>(null);
 
@@ -210,12 +208,6 @@ export default function Home() {
                     setChartCnt={setChartCnt}
                     chartViews={chartViews}
                     setChartViews={setChartViews}
-                    mosaicValue={mosaicValue}
-                    setMosaicValue={setMosaicValue}
-                    mosaicProperty={mosaicProperty}
-                    setMosaicProperty={setMosaicProperty}
-                    mosaicPropertyDetail={mosaicPropertyDetail}
-                    setMosaicPropertyDetail={setMosaicPropertyDetail}
                     openModal={openModal}
                     setOpenModal={setOpenModal}
                     setModalNode={setModalNode} />

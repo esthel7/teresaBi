@@ -12,6 +12,7 @@ import {
 } from 'react';
 import { Mosaic, MosaicWindow, MosaicNode } from 'react-mosaic-component';
 import 'react-mosaic-component/react-mosaic-component.css';
+import { useMosaicStore } from '@/store/mosaicStore';
 import ChartType from './ChartType';
 import FinancialType from './FinancialType';
 import TextType from './TextType';
@@ -24,13 +25,7 @@ interface ChartParameter {
   originalDataSource: RefObject<(string | number)[][]>;
   setChartCnt: Dispatch<SetStateAction<number>>;
   chartViews: string[];
-  mosaicValue: MosaicNode<string> | null;
-  setMosaicValue: Dispatch<SetStateAction<MosaicNode<string> | null>>;
   setChartViews: Dispatch<SetStateAction<string[]>>;
-  mosaicProperty: string | null;
-  setMosaicProperty: Dispatch<SetStateAction<string | null>>;
-  mosaicPropertyDetail: boolean;
-  setMosaicPropertyDetail: Dispatch<SetStateAction<boolean>>;
   openModal: boolean;
   setOpenModal: Dispatch<SetStateAction<boolean>>;
   setModalNode: Dispatch<SetStateAction<ReactNode>>;
@@ -43,16 +38,18 @@ export default function Chart({
   setChartCnt,
   chartViews,
   setChartViews,
-  mosaicValue,
-  setMosaicValue,
-  mosaicProperty,
-  setMosaicProperty,
-  mosaicPropertyDetail,
-  setMosaicPropertyDetail,
   openModal,
   setOpenModal,
   setModalNode
 }: ChartParameter) {
+  const {
+    mosaicValue,
+    setMosaicValue,
+    mosaicProperty,
+    setMosaicProperty,
+    mosaicPropertyDetail,
+    setMosaicPropertyDetail
+  } = useMosaicStore();
   const [openDataProperty, setOpenDataProperty] = useState(false);
   const [openShareProperty, setOpenShareProperty] = useState(false);
   const chartBoxRef = useRef<HTMLDivElement>(null);
@@ -170,7 +167,6 @@ export default function Chart({
                 inventory={inventory}
                 inventoryFormat={inventoryFormat}
                 originalDataSource={originalDataSource}
-                mosaicProperty={mosaicProperty}
                 mosaicId={id}
                 chartBoxRef={chartBoxRef}
                 openDataProperty={openDataProperty}
@@ -183,7 +179,6 @@ export default function Chart({
                 inventory={inventory}
                 inventoryFormat={inventoryFormat}
                 originalDataSource={originalDataSource}
-                mosaicProperty={mosaicProperty}
                 mosaicId={id}
                 chartBoxRef={chartBoxRef}
                 openDataProperty={openDataProperty}
@@ -193,7 +188,6 @@ export default function Chart({
             ) : null}
             {id.split('-')[0] === 'text' ? (
               <TextType
-                mosaicProperty={mosaicProperty}
                 mosaicId={id}
                 openDataProperty={openDataProperty}
                 setOpenDataProperty={setOpenDataProperty}
@@ -203,7 +197,6 @@ export default function Chart({
             ) : null}
             {id.split('-')[0] === 'img' ? (
               <ImgType
-                mosaicProperty={mosaicProperty}
                 mosaicId={id}
                 openDataProperty={openDataProperty}
                 setOpenDataProperty={setOpenDataProperty}
