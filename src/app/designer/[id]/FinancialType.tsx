@@ -31,14 +31,12 @@ import { DateProperty, DatePropertyType } from '@/constants';
 import { dateFormat } from '@/utils/dateFormat';
 import { useMosaicStore } from '@/store/mosaicStore';
 import distyles from './designerId.module.css';
+import { useInventoryStore } from '@/store/inventoryStore';
 
 type NeededDataType = 'Date' | 'Value';
 const DrawType = ['stock', 'candlestick'] as const;
 
 interface FinancialTypeParameter {
-  inventory: RefObject<Record<string, number>>;
-  inventoryFormat: RefObject<Record<string, string>>;
-  originalDataSource: RefObject<(string | number)[][]>;
   mosaicId: string;
   chartBoxRef: RefObject<HTMLDivElement | null>;
   openDataProperty: boolean;
@@ -48,9 +46,6 @@ interface FinancialTypeParameter {
 }
 
 export default function FinancialType({
-  inventory,
-  originalDataSource,
-  inventoryFormat,
   mosaicId,
   chartBoxRef,
   openDataProperty,
@@ -59,6 +54,8 @@ export default function FinancialType({
   setOpenShareProperty
 }: FinancialTypeParameter) {
   const { mosaicProperty } = useMosaicStore();
+  const { inventory, inventoryFormat, originalDataSource } =
+    useInventoryStore();
   const [dateInventory, setDateInventory] = useState<string[][]>([]);
   const [valueInventory, setValueInventory] = useState<string[][]>([]);
   const [dateDetail, setDateDetail] = useState(false);
@@ -98,17 +95,14 @@ export default function FinancialType({
     const format: Record<string, string | number | (string | number)[]>[] = [];
     const match: Record<string, number> = {};
     let cnt = 0;
-    const sortedOriginalDataSource = originalDataSource.current.sort(
+    const sortedOriginalDataSource = originalDataSource.sort(
       (a, b) =>
-        new Date(a[inventory.current[datekey]]).getTime() -
-        new Date(b[inventory.current[datekey]]).getTime()
+        new Date(a[inventory[datekey]]).getTime() -
+        new Date(b[inventory[datekey]]).getTime()
     );
     sortedOriginalDataSource.forEach(item => {
       let formatIdx = 0;
-      const keyword = dateFormat(
-        dateType,
-        item[inventory.current[datekey]] as string
-      );
+      const keyword = dateFormat(dateType, item[inventory[datekey]] as string);
       if (keyword in match) formatIdx = match[keyword];
       else {
         match[keyword] = cnt;
@@ -121,7 +115,7 @@ export default function FinancialType({
         format.push(newFormat);
       }
       (format[formatIdx][valuekey] as (string | number)[]).push(
-        item[inventory.current[valuekey]]
+        item[inventory[valuekey]]
       );
     });
 
@@ -196,11 +190,11 @@ export default function FinancialType({
 
   function changeOrAddInventory(item: string) {
     if (!dateDetail && !valueDetail) return;
-    if (dateDetail && inventoryFormat.current[item] !== 'Date') {
+    if (dateDetail && inventoryFormat[item] !== 'Date') {
       alert('Date형만 가능합니다.');
       return;
     }
-    if (valueDetail && inventoryFormat.current[item] !== 'number') {
+    if (valueDetail && inventoryFormat[item] !== 'number') {
       alert('Number형만 가능합니다.');
       return;
     }
@@ -214,7 +208,7 @@ export default function FinancialType({
   }
 
   function ViewAllData() {
-    const inventoryKeys = Object.keys(inventory.current);
+    const inventoryKeys = Object.keys(inventory);
     return (
       <div className={distyles.dataBox}>
         <div className={distyles.header}>header</div>
@@ -224,7 +218,7 @@ export default function FinancialType({
             className={`${distyles.dataItem} ${item === selectData ? distyles.dataItemSelect : ''}`}
             onClick={() => setSelectData(item)}>
             <div>{item}</div>
-            <div>{inventoryFormat.current[item]}</div>
+            <div>{inventoryFormat[item]}</div>
           </div>
         ))}
       </div>

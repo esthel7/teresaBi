@@ -6,13 +6,13 @@ import {
   MouseEvent,
   useState,
   useEffect,
-  RefObject,
   ReactNode,
   useRef
 } from 'react';
 import { Mosaic, MosaicWindow, MosaicNode } from 'react-mosaic-component';
 import 'react-mosaic-component/react-mosaic-component.css';
 import { useMosaicStore } from '@/store/mosaicStore';
+import { useInventoryStore } from '@/store/inventoryStore';
 import ChartType from './ChartType';
 import FinancialType from './FinancialType';
 import TextType from './TextType';
@@ -20,9 +20,6 @@ import ImgType from './ImgType';
 import distyles from './designerId.module.css';
 
 interface ChartParameter {
-  inventory: RefObject<Record<string, number>>;
-  inventoryFormat: RefObject<Record<string, string>>;
-  originalDataSource: RefObject<(string | number)[][]>;
   setChartCnt: Dispatch<SetStateAction<number>>;
   chartViews: string[];
   setChartViews: Dispatch<SetStateAction<string[]>>;
@@ -32,9 +29,6 @@ interface ChartParameter {
 }
 
 export default function Chart({
-  inventory,
-  originalDataSource,
-  inventoryFormat,
   setChartCnt,
   chartViews,
   setChartViews,
@@ -50,12 +44,13 @@ export default function Chart({
     mosaicPropertyDetail,
     setMosaicPropertyDetail
   } = useMosaicStore();
+  const { inventory } = useInventoryStore();
   const [openDataProperty, setOpenDataProperty] = useState(false);
   const [openShareProperty, setOpenShareProperty] = useState(false);
   const chartBoxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!inventory.current.length) {
+    if (!inventory.length) {
       // redirect /designer after fetching data
     }
   }, [inventory]);
@@ -164,9 +159,6 @@ export default function Chart({
             ) : null}
             {id.split('-')[0] === 'chart' ? (
               <ChartType
-                inventory={inventory}
-                inventoryFormat={inventoryFormat}
-                originalDataSource={originalDataSource}
                 mosaicId={id}
                 chartBoxRef={chartBoxRef}
                 openDataProperty={openDataProperty}
@@ -176,9 +168,6 @@ export default function Chart({
             ) : null}
             {id.split('-')[0] === 'financial' ? (
               <FinancialType
-                inventory={inventory}
-                inventoryFormat={inventoryFormat}
-                originalDataSource={originalDataSource}
                 mosaicId={id}
                 chartBoxRef={chartBoxRef}
                 openDataProperty={openDataProperty}

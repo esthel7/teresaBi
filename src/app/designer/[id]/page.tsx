@@ -1,17 +1,17 @@
 'use client';
 
-import { ChangeEvent, useRef, useState, MouseEvent, ReactNode } from 'react';
+import { ChangeEvent, useState, MouseEvent, ReactNode } from 'react';
 import { MosaicNode } from 'react-mosaic-component';
 import * as XLSX from 'xlsx';
 import distyles from './designerId.module.css';
 import 'react-mosaic-component/react-mosaic-component.css';
 import { useMosaicStore } from '@/store/mosaicStore';
+import { useInventoryStore } from '@/store/inventoryStore';
 import Chart from './Chart';
 
 export default function Home() {
-  const inventory = useRef<Record<string, number>>({});
-  const inventoryFormat = useRef<Record<string, string>>({});
-  const originalDataSource = useRef<(string | number)[][]>([]);
+  const { setInventory, setInventoryFormat, setOriginalDataSource } =
+    useInventoryStore();
   const [dashboardTitle] = useState('새 대시보드');
   const [chartCnt, setChartCnt] = useState(0);
   const [chartViews, setChartViews] = useState<string[]>([]);
@@ -40,8 +40,8 @@ export default function Home() {
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
 
-      inventory.current = {};
-      inventoryFormat.current = {};
+      const nowInventory: Record<string, number> = {};
+      const nowInventoryFormat: Record<string, string> = {};
       const jsonData: (string | number)[][] = XLSX.utils.sheet_to_json(sheet, {
         header: 1,
         cellDates: true,
@@ -50,8 +50,8 @@ export default function Home() {
       } as any);
       const originalInventory = jsonData.shift() as string[];
       originalInventory.forEach((item, index) => {
-        inventory.current[item] = index;
-        inventoryFormat.current[item] = /^\d{1,2}\/\d{1,2}\/\d{2}$/.test(
+        nowInventory[item] = index;
+        nowInventoryFormat[item] = /^\d{1,2}\/\d{1,2}\/\d{2}$/.test(
           String(jsonData[0][index])
         )
           ? 'Date'
@@ -63,7 +63,9 @@ export default function Home() {
       const refined = jsonData.map(row =>
         row.map(cell => formatCell(cell))
       ) as (string | number)[][];
-      originalDataSource.current = refined;
+      setInventory(nowInventory);
+      setInventoryFormat(nowInventoryFormat);
+      setOriginalDataSource(refined);
       console.log('check original data', refined);
     };
 
@@ -202,9 +204,6 @@ export default function Home() {
               ) : (
                 <div className={distyles.area}>
                   <Chart
-                    inventory={inventory}
-                    inventoryFormat={inventoryFormat}
-                    originalDataSource={originalDataSource}
                     setChartCnt={setChartCnt}
                     chartViews={chartViews}
                     setChartViews={setChartViews}
