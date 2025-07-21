@@ -17,6 +17,7 @@ import ChartType from './ChartType';
 import FinancialType from './FinancialType';
 import TextType from './TextType';
 import ImgType from './ImgType';
+import RangeType from './RangeType';
 import distyles from './designerId.module.css';
 
 interface ChartParameter {
@@ -192,6 +193,15 @@ export default function Chart({
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 setModalNode={setModalNode} />
+            ) : null}
+            {id.split('-')[0] === 'range' ? (
+              <RangeType
+                mosaicId={id}
+                chartBoxRef={chartBoxRef}
+                openDataProperty={openDataProperty}
+                setOpenDataProperty={setOpenDataProperty}
+                openShareProperty={openShareProperty}
+                setOpenShareProperty={setOpenShareProperty} />
             ) : null}
           </div>
         </MosaicWindow>
