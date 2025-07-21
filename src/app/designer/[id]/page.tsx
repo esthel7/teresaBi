@@ -77,7 +77,7 @@ export default function Home() {
     const item = target.closest(`.${distyles.sideBarItem}`);
 
     if (item && item instanceof HTMLElement) {
-      const type = item.dataset.type as ChartType;
+      const type = item.dataset.type;
       setChartCnt(prev => prev + 1);
       const newChartViews = [...chartViews, `${type}-${String(Date.now())}`];
       setChartViews(newChartViews);
