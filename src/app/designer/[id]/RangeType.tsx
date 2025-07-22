@@ -6,15 +6,22 @@ import {
   useState,
   useEffect,
   RefObject,
-  // useRef,
+  useRef,
   MouseEvent
 } from 'react';
+import RangeSelector, {
+  RangeSelector as RangeComponent,
+  Chart,
+  CommonSeriesSettings,
+  Series
+} from 'devextreme-react/range-selector';
 import { useMosaicStore } from '@/store/mosaicStore';
 import { useInventoryStore } from '@/store/inventoryStore';
 import distyles from './designerId.module.css';
 import { calculate } from '@/utils/calculate';
 import { saveImg, saveExcel } from '@/utils/export';
 import { NumberProperty, NumberPropertyType } from '@/constants';
+import 'devextreme/dist/css/dx.light.css';
 
 type NeededDataType = 'X' | 'Y';
 const DrawType = [
@@ -64,6 +71,8 @@ export default function RangeType({
   const [dataSource, setDataSource] = useState<
     Record<string, string | number>[]>([]);
   const ExceptNumberProperty = ['카운트', '고유 카운트'];
+  const rangeRef = useRef<RangeComponent>(null);
+  const [range, setRange] = useState<(number | Date)[]>([]);
 
   useEffect(() => {
     if (openDataProperty) return;
@@ -83,79 +92,88 @@ export default function RangeType({
   useEffect(() => {
     if (!xInventory.length || !yInventory.length) {
       setDataSource([]);
+      setRange([]);
       return;
     }
-    const xkeys = xInventory.map(item => item[0]);
-    const ykeys = yInventory.map(item => item[0]);
+    const xkey = xInventory[0][0];
+    const ykey = yInventory[0][0];
     const format: Record<string, string | number | (string | number)[]>[] = [];
     const match: Record<string, number> = {};
     let cnt = 0;
-    originalDataSource.forEach(item => {
+    const sortedOriginalDataSource = originalDataSource.sort((a, b) => {
+      return inventoryFormat[ykey] === 'number'
+        ? (a[inventory[ykey]] as number) - (b[inventory[ykey]] as number)
+        : new Date(a[inventory[ykey]]).getTime() -
+            new Date(b[inventory[ykey]]).getTime();
+    });
+    sortedOriginalDataSource.forEach(item => {
       let formatIdx = 0;
-      const keyword = xkeys.map(key => item[inventory[key]]).join('/');
+      const keyword = item[inventory[xkey]];
       if (keyword in match) formatIdx = match[keyword];
       else {
         match[keyword] = cnt;
         formatIdx = cnt;
         cnt++;
         const newFormat: Record<string, string | number | number[]> = {
-          [xkeys.join('/')]: keyword
+          [xkey]: keyword
         };
-        ykeys.forEach((key, idx) => (newFormat[key + '-' + idx] = []));
+        newFormat[ykey] = [];
         format.push(newFormat);
       }
-      ykeys.forEach((key, idx) =>
-        (format[formatIdx][key + '-' + idx] as (string | number)[]).push(
-          item[inventory[key]]
-        )
+      (format[formatIdx][ykey] as (string | number)[]).push(
+        item[inventory[ykey]]
       );
     });
 
     const final: Record<string, string | number>[] = format.map(item => {
-      ykeys.forEach((key, idx) => {
-        item[key + '-' + idx] = calculate(
-          yInventory[idx][3] as NumberPropertyType,
-          item[key + '-' + idx] as number[]
-        );
-      });
+      item[ykey] = calculate(
+        yInventory[0][3] as NumberPropertyType,
+        item[ykey] as number[]
+      );
       return item as Record<string, string | number>;
     });
     console.log('check graph data', final);
     setDataSource(final);
-  }, [inventory, originalDataSource, xInventory, yInventory]);
+    setRange([
+      final[0][xkey] as number,
+      final[final.length - 1][xkey] as number
+    ]);
+  }, [inventory, inventoryFormat, originalDataSource, xInventory, yInventory]);
 
-  // useEffect(() => {
-  //   if (!dataSource.length) return;
-  //   const parent = document.getElementById('chartBox');
-  //   if (!parent || !chartRef.current) return;
-  //   let timeout: ReturnType<typeof setTimeout> | null = null;
-  //   const observer = new ResizeObserver(() => {
-  //     if (timeout) clearTimeout(timeout);
-  //     timeout = setTimeout(() => {
-  //       chartRef.current?.instance?.render();
-  //     }, 300); // render after 300ms from stoppipng resizing
-  //   });
-  //   observer.observe(parent);
-  //   return () => {
-  //     observer.disconnect();
-  //     if (timeout) clearTimeout(timeout);
-  //   };
-  // }, [dataSource]);
+  useEffect(() => {
+    if (!dataSource.length) return;
+    const parent = document.getElementById('chartBox');
+    if (!parent || !rangeRef.current) return;
+    let timeout: ReturnType<typeof setTimeout> | null = null;
+    const observer = new ResizeObserver(() => {
+      if (timeout) clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        rangeRef.current?.instance?.render();
+      }, 300); // render after 300ms from stoppipng resizing
+    });
+    observer.observe(parent);
+    return () => {
+      observer.disconnect();
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [dataSource]);
 
   function openDetailProperty(flag: NeededDataType) {
     setXDetail(false);
     setYDetail(false);
     setSelectData(null);
-    setDrawType(DrawType[0]);
-    setCalculateType(NumberProperty[0]);
     switch (flag) {
       case 'X':
+        if (xInventory.length) break;
         setXDetail(true);
         setSelectDataIdx(xInventory.length);
         break;
       case 'Y':
+        if (yInventory.length) break;
         setYDetail(true);
         setSelectDataIdx(yInventory.length);
+        setDrawType(DrawType[0]);
+        setCalculateType(NumberProperty[0]);
         break;
       default:
         console.error('error!');
@@ -174,21 +192,24 @@ export default function RangeType({
     const left = selectedInventory.slice(0, idx);
     const right = selectedInventory.slice(idx + 1);
     setSelectedInventory([...left, ...right]);
+    setDataSource([]);
+    setRange([]);
     setSelectData(null);
     setSelectDataIdx(-1);
   }
 
   function changeOrAddInventory(item: string) {
     if (!xDetail && !yDetail) return;
-    const [selectedInventory, setSelectedInventory] = xDetail
-      ? [xInventory, setXInventory]
-      : [yInventory, setYInventory];
-    const left = selectedInventory.slice(0, selectDataIdx);
-    const right = selectedInventory.slice(selectDataIdx + 1);
-    const newValue: string[][] = [];
     if (xDetail) {
+      if (
+        inventoryFormat[item] !== 'number' &&
+        inventoryFormat[item] !== 'Date'
+      ) {
+        alert('number 혹은 Date 형식만 가능합니다.');
+        return;
+      }
       // realname, alias
-      newValue.push([item, item]);
+      setXInventory([[item, item]]);
     } else if (yDetail) {
       let nowCalculateType = calculateType;
       if (
@@ -199,9 +220,8 @@ export default function RangeType({
         nowCalculateType = NumberProperty[0];
       }
       // realname, alias, drawType, calculateType
-      newValue.push([item, item, drawType, nowCalculateType]);
+      setYInventory([[item, item, drawType, nowCalculateType]]);
     }
-    setSelectedInventory([...left, ...newValue, ...right]);
   }
 
   function ViewAllData() {
@@ -391,7 +411,30 @@ export default function RangeType({
         </div>
       ) : null}
 
-      <div id="chartBox" className={distyles.chartBox}></div>
+      <div id="chartBox" className={distyles.chartBox}>
+        {dataSource.length ? (
+          <RangeSelector
+            id="chart"
+            height="100%"
+            ref={rangeRef}
+            dataSource={dataSource}
+            value={range}
+            onValueChanged={e => setRange(e.value as (number | Date)[])}
+            scale={{
+              startValue: dataSource[0][xInventory[0][0]],
+              endValue: dataSource[dataSource.length - 1][xInventory[0][0]]
+            }}>
+            <Chart>
+              <CommonSeriesSettings argumentField={xInventory[0][0]} />
+              <Series
+                key={yInventory[0][0]}
+                valueField={yInventory[0][0]} // y value
+                type={drawType}
+                name={yInventory[0][1]} />
+            </Chart>
+          </RangeSelector>
+        ) : null}
+      </div>
     </>
   );
 }
