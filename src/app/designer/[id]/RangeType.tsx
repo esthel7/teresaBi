@@ -13,7 +13,8 @@ import RangeSelector, {
   RangeSelector as RangeComponent,
   Chart,
   CommonSeriesSettings,
-  Series
+  Series,
+  Scale
 } from 'devextreme-react/range-selector';
 import { useMosaicStore } from '@/store/mosaicStore';
 import { useInventoryStore } from '@/store/inventoryStore';
@@ -419,11 +420,10 @@ export default function RangeType({
             ref={rangeRef}
             dataSource={dataSource}
             value={range}
-            onValueChanged={e => setRange(e.value as (number | Date)[])}
-            scale={{
-              startValue: dataSource[0][xInventory[0][0]],
-              endValue: dataSource[dataSource.length - 1][xInventory[0][0]]
-            }}>
+            onValueChanged={e => setRange(e.value as (number | Date)[])}>
+            <Scale
+              startValue={dataSource[0][xInventory[0][0]]}
+              endValue={dataSource[dataSource.length - 1][xInventory[0][0]]} />
             <Chart>
               <CommonSeriesSettings argumentField={xInventory[0][0]} />
               <Series
