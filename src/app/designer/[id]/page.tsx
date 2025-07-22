@@ -7,12 +7,11 @@ import distyles from './designerId.module.css';
 import 'react-mosaic-component/react-mosaic-component.css';
 import { useMosaicStore } from '@/store/mosaicStore';
 import { useInventoryStore } from '@/store/inventoryStore';
+import { useSourceStore } from '@/store/sourceStore';
 import Chart from './Chart';
 
 export default function Home() {
   const {
-    source,
-    setSource,
     inventory,
     setInventory,
     inventoryFormat,
@@ -20,6 +19,7 @@ export default function Home() {
     originalDataSource,
     setOriginalDataSource
   } = useInventoryStore();
+  const { source, setSource } = useSourceStore();
   const [dashboardTitle] = useState('새 대시보드');
   const [chartCnt, setChartCnt] = useState(0);
   const [chartViews, setChartViews] = useState<string[]>([]);
@@ -27,7 +27,6 @@ export default function Home() {
     useMosaicStore();
   const [openModal, setOpenModal] = useState(false);
   const [modalNode, setModalNode] = useState<ReactNode>(null);
-  const [sources, setSources] = useState<string[]>([]);
 
   function formatCell(value: unknown) {
     if (!isNaN(Number(value)) && typeof value === 'string')
@@ -40,7 +39,6 @@ export default function Home() {
     const file = e.target.files?.[0];
     if (!file) return;
     const fileName = file.name.replace(/\.[^/.]+$/, '');
-    setSources([...sources, fileName]);
 
     const reader = new FileReader();
 
@@ -123,6 +121,29 @@ export default function Home() {
     setMosaicPropertyDetail(true);
   }
 
+  function removeSource(item: string) {
+    const prevInventory: Record<string, Record<string, number>> = {};
+    for (const key in inventory) {
+      if (key === item) continue;
+      prevInventory[key] = { ...inventory[key] };
+    }
+    setInventory(prevInventory);
+    const prevInventoryFormat: Record<string, Record<string, string>> = {};
+    for (const key in inventoryFormat) {
+      if (key === item) continue;
+      prevInventoryFormat[key] = { ...inventoryFormat[key] };
+    }
+    setInventoryFormat(prevInventoryFormat);
+    const prevOriginalDataSoruce: Record<string, (string | number)[][]> = {};
+    for (const key in inventoryFormat) {
+      if (key === item) continue;
+      prevOriginalDataSoruce[key] = [
+        ...originalDataSource[key].map(item => [...item])
+      ];
+    }
+    setOriginalDataSource(prevOriginalDataSoruce);
+  }
+
   return (
     <>
       <div className={distyles.designer}>
@@ -182,14 +203,16 @@ export default function Home() {
 
           {/* temporary (delete after) */}
           <hr />
-          {sources.map(item => (
-            <div
-              key={item}
-              onClick={() => setSource(item)}
-              style={{ background: source === item ? 'yellow' : 'white' }}>
-              {item}
-            </div>
-          ))}
+          {Object.keys(inventory).length > 0 &&
+            Object.keys(inventory).map(item => (
+              <div
+                key={item}
+                onClick={() => setSource(item)}
+                onDoubleClick={() => removeSource(item)}
+                style={{ background: source === item ? 'yellow' : 'white' }}>
+                {item}
+              </div>
+            ))}
           <input
             type="file"
             accept=".xlsx, .xls"
