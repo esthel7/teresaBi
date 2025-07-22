@@ -18,9 +18,11 @@ import RangeSelector, {
 } from 'devextreme-react/range-selector';
 import { useMosaicStore } from '@/store/mosaicStore';
 import { useInventoryStore } from '@/store/inventoryStore';
+import { useSourceStore } from '@/store/sourceStore';
 import distyles from './designerId.module.css';
 import { calculate } from '@/utils/calculate';
 import { saveImg, saveExcel } from '@/utils/export';
+import { isSameSource } from '@/utils/isSameSource';
 import { NumberProperty, NumberPropertyType } from '@/constants';
 import 'devextreme/dist/css/dx.light.css';
 
@@ -57,6 +59,7 @@ export default function RangeType({
   const { mosaicProperty } = useMosaicStore();
   const { inventory, inventoryFormat, originalDataSource } =
     useInventoryStore();
+  const { source } = useSourceStore();
   const [xInventory, setXInventory] = useState<string[][]>([]);
   const [yInventory, setYInventory] = useState<string[][]>([]);
   const [xDetail, setXDetail] = useState(false);
@@ -98,18 +101,25 @@ export default function RangeType({
     }
     const xkey = xInventory[0][0];
     const ykey = yInventory[0][0];
+    if (!isSameSource([xkey, ykey], inventory)) {
+      setXInventory([]);
+      setYInventory([]);
+      setDataSource([]);
+      return;
+    }
     const format: Record<string, string | number | (string | number)[]>[] = [];
     const match: Record<string, number> = {};
     let cnt = 0;
-    const sortedOriginalDataSource = originalDataSource.sort((a, b) => {
-      return inventoryFormat[ykey] === 'number'
-        ? (a[inventory[ykey]] as number) - (b[inventory[ykey]] as number)
-        : new Date(a[inventory[ykey]]).getTime() -
-            new Date(b[inventory[ykey]]).getTime();
+    const sortedOriginalDataSource = originalDataSource[source].sort((a, b) => {
+      return inventoryFormat[source][ykey] === 'number'
+        ? (a[inventory[source][ykey]] as number) -
+            (b[inventory[source][ykey]] as number)
+        : new Date(a[inventory[source][ykey]]).getTime() -
+            new Date(b[inventory[source][ykey]]).getTime();
     });
     sortedOriginalDataSource.forEach(item => {
       let formatIdx = 0;
-      const keyword = item[inventory[xkey]];
+      const keyword = item[inventory[source][xkey]];
       if (keyword in match) formatIdx = match[keyword];
       else {
         match[keyword] = cnt;
@@ -122,7 +132,7 @@ export default function RangeType({
         format.push(newFormat);
       }
       (format[formatIdx][ykey] as (string | number)[]).push(
-        item[inventory[ykey]]
+        item[inventory[source][ykey]]
       );
     });
 
@@ -139,6 +149,7 @@ export default function RangeType({
       final[0][xkey] as number,
       final[final.length - 1][xkey] as number
     ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inventory, inventoryFormat, originalDataSource, xInventory, yInventory]);
 
   useEffect(() => {
@@ -203,8 +214,8 @@ export default function RangeType({
     if (!xDetail && !yDetail) return;
     if (xDetail) {
       if (
-        inventoryFormat[item] !== 'number' &&
-        inventoryFormat[item] !== 'Date'
+        inventoryFormat[source][item] !== 'number' &&
+        inventoryFormat[source][item] !== 'Date'
       ) {
         alert('number 혹은 Date 형식만 가능합니다.');
         return;
@@ -214,7 +225,7 @@ export default function RangeType({
     } else if (yDetail) {
       let nowCalculateType = calculateType;
       if (
-        inventoryFormat[item] !== 'number' &&
+        inventoryFormat[source][item] !== 'number' &&
         !ExceptNumberProperty.includes(calculateType)
       ) {
         setCalculateType(NumberProperty[0]);
@@ -226,7 +237,8 @@ export default function RangeType({
   }
 
   function ViewAllData() {
-    const inventoryKeys = Object.keys(inventory);
+    if (!source) return null;
+    const inventoryKeys = Object.keys(inventory[source]);
     return (
       <div className={distyles.dataBox}>
         <div className={distyles.header}>header</div>
@@ -236,7 +248,7 @@ export default function RangeType({
             className={`${distyles.dataItem} ${item === selectData ? distyles.dataItemSelect : ''}`}
             onClick={() => setSelectData(item)}>
             <div>{item}</div>
-            <div>{inventoryFormat[item]}</div>
+            <div>{inventoryFormat[source][item]}</div>
           </div>
         ))}
       </div>
@@ -361,7 +373,9 @@ export default function RangeType({
             <h5>데이터 선택</h5>
             <ViewAllData />
             <h5>집계 방식 선택</h5>
-            {selectData && inventoryFormat[selectData] === 'number'
+            {selectData &&
+            source &&
+            inventoryFormat[source][selectData] === 'number'
               ? NumberProperty.map(item => (
                   <div
                     key={item}

@@ -51,7 +51,7 @@ export default function Chart({
   const chartBoxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!inventory.length) {
+    if (!Object.keys(inventory).length) {
       // redirect /designer after fetching data
     }
   }, [inventory]);

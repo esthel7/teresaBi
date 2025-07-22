@@ -24,8 +24,10 @@ import {
 import { NumberProperty, NumberPropertyType } from '@/constants';
 import { calculate } from '@/utils/calculate';
 import { saveImg, saveExcel } from '@/utils/export';
+import { isSameSource } from '@/utils/isSameSource';
 import { useMosaicStore } from '@/store/mosaicStore';
 import { useInventoryStore } from '@/store/inventoryStore';
+import { useSourceStore } from '@/store/sourceStore';
 import distyles from './designerId.module.css';
 
 type NeededDataType = 'X' | 'Y' | 'Series';
@@ -68,6 +70,7 @@ export default function ChartType({
   const { mosaicProperty } = useMosaicStore();
   const { inventory, inventoryFormat, originalDataSource } =
     useInventoryStore();
+  const { source } = useSourceStore();
   const [xInventory, setXInventory] = useState<string[][]>([]);
   const [yInventory, setYInventory] = useState<string[][]>([]);
   const [seriesInventory, setSeriesInventory] = useState<string[][]>([]);
@@ -113,12 +116,19 @@ export default function ChartType({
       ...xInventory.map(item => item[0])
     ];
     const ykeys = yInventory.map(item => item[0]);
+    if (!isSameSource([...xkeys, ...ykeys], inventory)) {
+      setXInventory([]);
+      setYInventory([]);
+      setSeriesInventory([]);
+      setDataSource([]);
+      return;
+    }
     const format: Record<string, string | number | (string | number)[]>[] = [];
     const match: Record<string, number> = {};
     let cnt = 0;
-    originalDataSource.forEach(item => {
+    originalDataSource[source].forEach(item => {
       let formatIdx = 0;
-      const keyword = xkeys.map(key => item[inventory[key]]).join('/');
+      const keyword = xkeys.map(key => item[inventory[source][key]]).join('/');
       if (keyword in match) formatIdx = match[keyword];
       else {
         match[keyword] = cnt;
@@ -132,7 +142,7 @@ export default function ChartType({
       }
       ykeys.forEach((key, idx) =>
         (format[formatIdx][key + '-' + idx] as (string | number)[]).push(
-          item[inventory[key]]
+          item[inventory[source][key]]
         )
       );
     });
@@ -148,6 +158,7 @@ export default function ChartType({
     });
     console.log('check graph data', final);
     setDataSource(final);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inventory, originalDataSource, xInventory, yInventory, seriesInventory]);
 
   useEffect(() => {
@@ -229,7 +240,7 @@ export default function ChartType({
     } else if (yDetail) {
       let nowCalculateType = calculateType;
       if (
-        inventoryFormat[item] !== 'number' &&
+        inventoryFormat[source][item] !== 'number' &&
         !ExceptNumberProperty.includes(calculateType)
       ) {
         setCalculateType(NumberProperty[0]);
@@ -245,7 +256,8 @@ export default function ChartType({
   }
 
   function ViewAllData() {
-    const inventoryKeys = Object.keys(inventory);
+    if (!source) return null;
+    const inventoryKeys = Object.keys(inventory[source]);
     return (
       <div className={distyles.dataBox}>
         <div className={distyles.header}>header</div>
@@ -255,7 +267,7 @@ export default function ChartType({
             className={`${distyles.dataItem} ${item === selectData ? distyles.dataItemSelect : ''}`}
             onClick={() => setSelectData(item)}>
             <div>{item}</div>
-            <div>{inventoryFormat[item]}</div>
+            <div>{inventoryFormat[source][item]}</div>
           </div>
         ))}
       </div>
@@ -426,7 +438,9 @@ export default function ChartType({
             <h5>데이터 선택</h5>
             <ViewAllData />
             <h5>집계 방식 선택</h5>
-            {selectData && inventoryFormat[selectData] === 'number'
+            {selectData &&
+            source &&
+            inventoryFormat[source][selectData] === 'number'
               ? NumberProperty.map(item => (
                   <div
                     key={item}

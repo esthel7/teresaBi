@@ -26,9 +26,11 @@ import {
 import { DateProperty, DatePropertyType } from '@/constants';
 import { dateFormat } from '@/utils/dateFormat';
 import { saveImg, saveExcel } from '@/utils/export';
+import { isSameSource } from '@/utils/isSameSource';
 import { useMosaicStore } from '@/store/mosaicStore';
-import distyles from './designerId.module.css';
 import { useInventoryStore } from '@/store/inventoryStore';
+import { useSourceStore } from '@/store/sourceStore';
+import distyles from './designerId.module.css';
 
 type NeededDataType = 'Date' | 'Value';
 const DrawType = ['stock', 'candlestick'] as const;
@@ -53,6 +55,7 @@ export default function FinancialType({
   const { mosaicProperty } = useMosaicStore();
   const { inventory, inventoryFormat, originalDataSource } =
     useInventoryStore();
+  const { source } = useSourceStore();
   const [dateInventory, setDateInventory] = useState<string[][]>([]);
   const [valueInventory, setValueInventory] = useState<string[][]>([]);
   const [dateDetail, setDateDetail] = useState(false);
@@ -89,17 +92,26 @@ export default function FinancialType({
     }
     const datekey = dateInventory[0][0];
     const valuekey = valueInventory[0][0];
+    if (!isSameSource([datekey, valuekey], inventory)) {
+      setDateInventory([]);
+      setValueInventory([]);
+      setDataSource([]);
+      return;
+    }
     const format: Record<string, string | number | (string | number)[]>[] = [];
     const match: Record<string, number> = {};
     let cnt = 0;
-    const sortedOriginalDataSource = originalDataSource.sort(
+    const sortedOriginalDataSource = originalDataSource[source].sort(
       (a, b) =>
-        new Date(a[inventory[datekey]]).getTime() -
-        new Date(b[inventory[datekey]]).getTime()
+        new Date(a[inventory[source][datekey]]).getTime() -
+        new Date(b[inventory[source][datekey]]).getTime()
     );
     sortedOriginalDataSource.forEach(item => {
       let formatIdx = 0;
-      const keyword = dateFormat(dateType, item[inventory[datekey]] as string);
+      const keyword = dateFormat(
+        dateType,
+        item[inventory[source][datekey]] as string
+      );
       if (keyword in match) formatIdx = match[keyword];
       else {
         match[keyword] = cnt;
@@ -112,7 +124,7 @@ export default function FinancialType({
         format.push(newFormat);
       }
       (format[formatIdx][valuekey] as (string | number)[]).push(
-        item[inventory[valuekey]]
+        item[inventory[source][valuekey]]
       );
     });
 
@@ -127,6 +139,7 @@ export default function FinancialType({
     });
     console.log('check graph data', final);
     setDataSource(final);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inventory, originalDataSource, dateInventory, valueInventory, dateType]);
 
   useEffect(() => {
@@ -187,11 +200,11 @@ export default function FinancialType({
 
   function changeOrAddInventory(item: string) {
     if (!dateDetail && !valueDetail) return;
-    if (dateDetail && inventoryFormat[item] !== 'Date') {
+    if (dateDetail && inventoryFormat[source][item] !== 'Date') {
       alert('Date형만 가능합니다.');
       return;
     }
-    if (valueDetail && inventoryFormat[item] !== 'number') {
+    if (valueDetail && inventoryFormat[source][item] !== 'number') {
       alert('Number형만 가능합니다.');
       return;
     }
@@ -205,7 +218,8 @@ export default function FinancialType({
   }
 
   function ViewAllData() {
-    const inventoryKeys = Object.keys(inventory);
+    if (!source) return null;
+    const inventoryKeys = Object.keys(inventory[source]);
     return (
       <div className={distyles.dataBox}>
         <div className={distyles.header}>header</div>
@@ -215,7 +229,7 @@ export default function FinancialType({
             className={`${distyles.dataItem} ${item === selectData ? distyles.dataItemSelect : ''}`}
             onClick={() => setSelectData(item)}>
             <div>{item}</div>
-            <div>{inventoryFormat[item]}</div>
+            <div>{inventoryFormat[source][item]}</div>
           </div>
         ))}
       </div>
