@@ -10,8 +10,16 @@ import { useInventoryStore } from '@/store/inventoryStore';
 import Chart from './Chart';
 
 export default function Home() {
-  const { setInventory, setInventoryFormat, setOriginalDataSource } =
-    useInventoryStore();
+  const {
+    source,
+    setSource,
+    inventory,
+    setInventory,
+    inventoryFormat,
+    setInventoryFormat,
+    originalDataSource,
+    setOriginalDataSource
+  } = useInventoryStore();
   const [dashboardTitle] = useState('새 대시보드');
   const [chartCnt, setChartCnt] = useState(0);
   const [chartViews, setChartViews] = useState<string[]>([]);
@@ -19,6 +27,7 @@ export default function Home() {
     useMosaicStore();
   const [openModal, setOpenModal] = useState(false);
   const [modalNode, setModalNode] = useState<ReactNode>(null);
+  const [sources, setSources] = useState<string[]>([]);
 
   function formatCell(value: unknown) {
     if (!isNaN(Number(value)) && typeof value === 'string')
@@ -30,6 +39,8 @@ export default function Home() {
   function handleFileUpload(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    const fileName = file.name.replace(/\.[^/.]+$/, '');
+    setSources([...sources, fileName]);
 
     const reader = new FileReader();
 
@@ -63,10 +74,19 @@ export default function Home() {
       const refined = jsonData.map(row =>
         row.map(cell => formatCell(cell))
       ) as (string | number)[][];
-      setInventory(nowInventory);
-      setInventoryFormat(nowInventoryFormat);
-      setOriginalDataSource(refined);
-      console.log('check original data', refined);
+      setInventory({ ...inventory, [fileName]: { ...nowInventory } });
+      setInventoryFormat({
+        ...inventoryFormat,
+        [fileName]: { ...nowInventoryFormat }
+      });
+      setOriginalDataSource({
+        ...originalDataSource,
+        [fileName]: [...refined.map(item => [...item])]
+      });
+      console.log('check original data', {
+        ...originalDataSource,
+        [fileName]: [...refined.map(item => [...item])]
+      });
     };
 
     reader.readAsArrayBuffer(file);
@@ -161,6 +181,15 @@ export default function Home() {
           </div>
 
           {/* temporary (delete after) */}
+          <hr />
+          {sources.map(item => (
+            <div
+              key={item}
+              onClick={() => setSource(item)}
+              style={{ background: source === item ? 'yellow' : 'white' }}>
+              {item}
+            </div>
+          ))}
           <input
             type="file"
             accept=".xlsx, .xls"
