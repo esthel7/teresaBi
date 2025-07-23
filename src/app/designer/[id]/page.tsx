@@ -113,7 +113,12 @@ export default function Home() {
     const first = buildMosaicNode(views.slice(0, mid), !horizontal);
     const second = buildMosaicNode(views.slice(mid), !horizontal);
     if (!first || !second) return (first || second)!;
-    return { direction: horizontal ? 'row' : 'column', first, second };
+    return {
+      direction: horizontal ? 'row' : 'column',
+      first,
+      second,
+      splitPercentage: 50
+    };
   }
 
   function onBlur() {
