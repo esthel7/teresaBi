@@ -13,6 +13,7 @@ import mammoth from 'mammoth';
 import TextEditor from './TextEditor';
 import 'react-quill-new/dist/quill.snow.css';
 import { useMosaicStore } from '@/store/mosaicStore';
+import { useDashboardStore } from '@/store/dashboardStore';
 import distyles from './designerId.module.css';
 
 interface TextTypeParameter {
@@ -33,10 +34,14 @@ export default function TextType({
   setModalNode
 }: TextTypeParameter) {
   const { mosaicProperty } = useMosaicStore();
+  const { unit, setUnit } = useDashboardStore();
   const [putText, setPutText] = useState<string>('');
-  const [writtenText, setWrittenText] = useState<string>('');
 
   useEffect(() => {
+    const prevUnit = JSON.parse(JSON.stringify(unit));
+    prevUnit[mosaicId].type = 'none';
+    setUnit(prevUnit);
+
     // call this callback for every Element node
     DOMPurify.addHook('uponSanitizeElement', node => {
       if (!(node instanceof window.Element)) return;
@@ -45,6 +50,7 @@ export default function TextType({
       if (node.hasAttribute('data-list'))
         node.setAttribute('data-list', node.getAttribute('data-list')!);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -75,11 +81,12 @@ export default function TextType({
   }
 
   function confirmModal() {
-    setWrittenText(
-      DOMPurify.sanitize(putText, {
-        ALLOWED_ATTR: ['class', 'data-list', 'src', 'alt', 'width', 'height'] // maintain class, data-list
-      })
-    );
+    const newWrittenText = DOMPurify.sanitize(putText, {
+      ALLOWED_ATTR: ['class', 'data-list', 'src', 'alt', 'width', 'height'] // maintain class, data-list
+    });
+    const prevUnit = JSON.parse(JSON.stringify(unit));
+    prevUnit[mosaicId].property.writtenText = newWrittenText;
+    setUnit(prevUnit);
     setOpenModal(false);
   }
 
@@ -107,11 +114,13 @@ export default function TextType({
           </div>
         </div>
       ) : null}
-      {writtenText ? (
+      {unit[mosaicId].property?.writtenText ? (
         <div className={`ql-snow ${distyles.viewText}`}>
           <div
             className="ql-editor"
-            dangerouslySetInnerHTML={{ __html: writtenText }} />
+            dangerouslySetInnerHTML={{
+              __html: unit[mosaicId].property?.writtenText as string
+            }} />
         </div>
       ) : null}
     </>

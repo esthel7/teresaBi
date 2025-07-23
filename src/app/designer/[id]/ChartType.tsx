@@ -28,6 +28,7 @@ import { isSameSource } from '@/utils/isSameSource';
 import { useMosaicStore } from '@/store/mosaicStore';
 import { useInventoryStore } from '@/store/inventoryStore';
 import { useSourceStore } from '@/store/sourceStore';
+import { useDashboardStore } from '@/store/dashboardStore';
 import distyles from './designerId.module.css';
 
 type NeededDataType = 'X' | 'Y' | 'Series';
@@ -71,6 +72,7 @@ export default function ChartType({
   const { inventory, inventoryFormat, originalDataSource } =
     useInventoryStore();
   const { source, setSource } = useSourceStore();
+  const { unit, setUnit } = useDashboardStore();
   // const [usedSource, setUsedSource] = useState<string>(''); // after process
   const [usedSource, setUsedSource] = useState<string>(source); // now process -> delete after
   const [xInventory, setXInventory] = useState<string[][]>([]);
@@ -193,11 +195,23 @@ export default function ChartType({
     });
     console.log('check graph data', final);
     setDataSource(final);
+    const prevUnit = JSON.parse(JSON.stringify(unit));
+    prevUnit[mosaicId].unitInventory = {
+      xInventory: [...xInventory.map(item => [...item])],
+      yInventory: [...yInventory.map(item => [...item])],
+      seriesInventory: [...seriesInventory.map(item => [...item])]
+    };
+    setUnit(prevUnit);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [xInventory, yInventory, seriesInventory]);
 
   useEffect(() => {
-    if (!dataSource.length) return;
+    if (!dataSource.length) {
+      const prevUnit = JSON.parse(JSON.stringify(unit));
+      prevUnit[mosaicId].unitInventory = {};
+      setUnit(prevUnit);
+      return;
+    }
     const parent = document.getElementById('chartBox');
     if (!parent || !chartRef.current) return;
     let timeout: ReturnType<typeof setTimeout> | null = null;
@@ -212,6 +226,7 @@ export default function ChartType({
       observer.disconnect();
       if (timeout) clearTimeout(timeout);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSource]);
 
   function openDetailProperty(flag: NeededDataType) {

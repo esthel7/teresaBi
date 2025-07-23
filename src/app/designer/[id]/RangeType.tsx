@@ -19,6 +19,7 @@ import RangeSelector, {
 import { useMosaicStore } from '@/store/mosaicStore';
 import { useInventoryStore } from '@/store/inventoryStore';
 import { useSourceStore } from '@/store/sourceStore';
+import { useDashboardStore } from '@/store/dashboardStore';
 import distyles from './designerId.module.css';
 import { calculate } from '@/utils/calculate';
 import { saveImg, saveExcel } from '@/utils/export';
@@ -60,6 +61,7 @@ export default function RangeType({
   const { inventory, inventoryFormat, originalDataSource } =
     useInventoryStore();
   const { source } = useSourceStore();
+  const { unit, setUnit } = useDashboardStore();
   const [xInventory, setXInventory] = useState<string[][]>([]);
   const [yInventory, setYInventory] = useState<string[][]>([]);
   const [xDetail, setXDetail] = useState(false);
@@ -79,6 +81,13 @@ export default function RangeType({
   const [range, setRange] = useState<(number | string)[]>([]);
 
   useEffect(() => {
+    const prevUnit = JSON.parse(JSON.stringify(unit));
+    prevUnit[mosaicId].type = 'filter';
+    setUnit(prevUnit);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (openDataProperty) return;
     setXDetail(false);
     setYDetail(false);
@@ -96,7 +105,6 @@ export default function RangeType({
   useEffect(() => {
     if (!xInventory.length || !yInventory.length) {
       setDataSource([]);
-      setRange([]);
       return;
     }
     const xkey = xInventory[0][0];
@@ -151,11 +159,30 @@ export default function RangeType({
       final[0][xkey] as number,
       final[final.length - 1][xkey] as number
     ]);
+    const prevUnit = JSON.parse(JSON.stringify(unit));
+    prevUnit[mosaicId].unitInventory = {
+      xInventory: [...xInventory.map(item => [...item])],
+      yInventory: [...yInventory.map(item => [...item])]
+    };
+    prevUnit[mosaicId].filterNum = {
+      [xkey]: [
+        final[0][xkey] as number | string,
+        final[final.length - 1][xkey] as number | string
+      ]
+    };
+    setUnit(prevUnit);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inventory, inventoryFormat, originalDataSource, xInventory, yInventory]);
 
   useEffect(() => {
-    if (!dataSource.length) return;
+    if (!dataSource.length) {
+      const prevUnit = JSON.parse(JSON.stringify(unit));
+      prevUnit[mosaicId].unitInventory = {};
+      prevUnit[mosaicId].filterNum = {};
+      setUnit(prevUnit);
+      setRange([]);
+      return;
+    }
     const parent = document.getElementById('chartBox');
     if (!parent || !rangeRef.current) return;
     let timeout: ReturnType<typeof setTimeout> | null = null;
@@ -170,6 +197,7 @@ export default function RangeType({
       observer.disconnect();
       if (timeout) clearTimeout(timeout);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSource]);
 
   function openDetailProperty(flag: NeededDataType) {
@@ -207,7 +235,6 @@ export default function RangeType({
     const right = selectedInventory.slice(idx + 1);
     setSelectedInventory([...left, ...right]);
     setDataSource([]);
-    setRange([]);
     setSelectData(null);
     setSelectDataIdx(-1);
   }
@@ -284,6 +311,12 @@ export default function RangeType({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function filterRange({ value }: { value: any[] }) {
     setRange(value as (number | string)[]);
+    const xkey = xInventory[0][0];
+    const prevUnit = JSON.parse(JSON.stringify(unit));
+    prevUnit[mosaicId].filterNum = {
+      [xkey]: [value[0] as number | string, value[1] as number | string]
+    };
+    setUnit(prevUnit);
   }
 
   return (

@@ -9,6 +9,7 @@ import {
   useEffect
 } from 'react';
 import { useMosaicStore } from '@/store/mosaicStore';
+import { useDashboardStore } from '@/store/dashboardStore';
 import distyles from './designerId.module.css';
 
 const ImgPosition = ['bottom', ' top', 'left', 'right', 'center'] as const;
@@ -31,10 +32,17 @@ export default function ImgType({
   setModalNode
 }: ImgTypeParameter) {
   const { mosaicProperty } = useMosaicStore();
+  const { unit, setUnit } = useDashboardStore();
   const [modalImg, setModalImg] = useState<string | null>(null);
-  const [receivedImg, setReceivedImg] = useState<string | null>(null);
   const [imgPosition, setImgPosition] =
     useState<(typeof ImgPosition)[number]>('center');
+
+  useEffect(() => {
+    const prevUnit = JSON.parse(JSON.stringify(unit));
+    prevUnit[mosaicId].type = 'none';
+    setUnit(prevUnit);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!openModal) return;
@@ -82,7 +90,11 @@ export default function ImgType({
 
   function confirmModal() {
     setOpenModal(false);
-    if (modalImg) setReceivedImg(modalImg);
+    if (modalImg) {
+      const prevUnit = JSON.parse(JSON.stringify(unit));
+      prevUnit[mosaicId].property.receivedImg = modalImg;
+      setUnit(prevUnit);
+    }
   }
 
   return (
@@ -121,11 +133,11 @@ export default function ImgType({
         </div>
       ) : null}
       <div className={distyles.mosaicImgBox}>
-        {receivedImg ? (
+        {unit[mosaicId].property.receivedImg ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             className={distyles.mosaicImg}
-            src={receivedImg}
+            src={unit[mosaicId].property.receivedImg as string}
             alt="Image"
             style={{ objectPosition: imgPosition }} />
         ) : null}

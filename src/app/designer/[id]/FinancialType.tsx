@@ -30,6 +30,7 @@ import { isSameSource } from '@/utils/isSameSource';
 import { useMosaicStore } from '@/store/mosaicStore';
 import { useInventoryStore } from '@/store/inventoryStore';
 import { useSourceStore } from '@/store/sourceStore';
+import { useDashboardStore } from '@/store/dashboardStore';
 import distyles from './designerId.module.css';
 
 type NeededDataType = 'Date' | 'Value';
@@ -56,6 +57,7 @@ export default function FinancialType({
   const { inventory, inventoryFormat, originalDataSource } =
     useInventoryStore();
   const { source } = useSourceStore();
+  const { unit, setUnit } = useDashboardStore();
   const [dateInventory, setDateInventory] = useState<string[][]>([]);
   const [valueInventory, setValueInventory] = useState<string[][]>([]);
   const [dateDetail, setDateDetail] = useState(false);
@@ -139,11 +141,22 @@ export default function FinancialType({
     });
     console.log('check graph data', final);
     setDataSource(final);
+    const prevUnit = JSON.parse(JSON.stringify(unit));
+    prevUnit[mosaicId].unitInventory = {
+      dateInventory: [...dateInventory.map(item => [...item])],
+      valueInventory: [...valueInventory.map(item => [...item])]
+    };
+    setUnit(prevUnit);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inventory, originalDataSource, dateInventory, valueInventory, dateType]);
 
   useEffect(() => {
-    if (!dataSource.length) return;
+    if (!dataSource.length) {
+      const prevUnit = JSON.parse(JSON.stringify(unit));
+      prevUnit[mosaicId].unitInventory = {};
+      setUnit(prevUnit);
+      return;
+    }
     const parent = document.getElementById('chartBox');
     if (!parent || !chartRef.current) return;
     let timeout: ReturnType<typeof setTimeout> | null = null;
@@ -158,6 +171,7 @@ export default function FinancialType({
       observer.disconnect();
       if (timeout) clearTimeout(timeout);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataSource]);
 
   function openDetailProperty(flag: NeededDataType) {
