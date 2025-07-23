@@ -70,7 +70,9 @@ export default function ChartType({
   const { mosaicProperty } = useMosaicStore();
   const { inventory, inventoryFormat, originalDataSource } =
     useInventoryStore();
-  const { source } = useSourceStore();
+  const { source, setSource } = useSourceStore();
+  // const [usedSource, setUsedSource] = useState<string>(''); // after process
+  const [usedSource, setUsedSource] = useState<string>(source); // now process -> delete after
   const [xInventory, setXInventory] = useState<string[][]>([]);
   const [yInventory, setYInventory] = useState<string[][]>([]);
   const [seriesInventory, setSeriesInventory] = useState<string[][]>([]);
@@ -99,6 +101,34 @@ export default function ChartType({
     setSelectDataIdx(-1);
   }, [openDataProperty]);
 
+  // now process -> delete after
+  useEffect(() => {
+    if (mosaicProperty === mosaicId) setUsedSource(source);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [source]);
+
+  // now process -> delete after
+  useEffect(() => {
+    if (mosaicProperty === mosaicId) setSource(usedSource);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mosaicProperty, mosaicId]);
+
+  // after process
+  // useEffect(() => {
+  //   if (mosaicProperty === mosaicId && usedSource!=='') setSource(usedSource);
+  // },[mosaicProperty,mosaicId]);
+
+  useEffect(() => {
+    if (usedSource === '' || source === '') return;
+    // if usedSource is not in inventory, display error view
+    chartBoxRef.current!.style.background = !Object.keys(inventory).includes(
+      usedSource
+    )
+      ? 'rgba(255, 0, 0, 0.2)'
+      : 'white';
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inventory]);
+
   useEffect(() => {
     if (!selectData) return;
     // click to item in [xDetail, yDetail, seriesDetail]
@@ -121,14 +151,19 @@ export default function ChartType({
       setYInventory([]);
       setSeriesInventory([]);
       setDataSource([]);
+      setUsedSource('');
       return;
     }
+    setUsedSource(source);
+
     const format: Record<string, string | number | (string | number)[]>[] = [];
     const match: Record<string, number> = {};
     let cnt = 0;
-    originalDataSource[source].forEach(item => {
+    originalDataSource[usedSource].forEach(item => {
       let formatIdx = 0;
-      const keyword = xkeys.map(key => item[inventory[source][key]]).join('/');
+      const keyword = xkeys
+        .map(key => item[inventory[usedSource][key]])
+        .join('/');
       if (keyword in match) formatIdx = match[keyword];
       else {
         match[keyword] = cnt;
@@ -142,7 +177,7 @@ export default function ChartType({
       }
       ykeys.forEach((key, idx) =>
         (format[formatIdx][key + '-' + idx] as (string | number)[]).push(
-          item[inventory[source][key]]
+          item[inventory[usedSource][key]]
         )
       );
     });
@@ -159,7 +194,7 @@ export default function ChartType({
     console.log('check graph data', final);
     setDataSource(final);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inventory, originalDataSource, xInventory, yInventory, seriesInventory]);
+  }, [xInventory, yInventory, seriesInventory]);
 
   useEffect(() => {
     if (!dataSource.length) return;
@@ -240,7 +275,7 @@ export default function ChartType({
     } else if (yDetail) {
       let nowCalculateType = calculateType;
       if (
-        inventoryFormat[source][item] !== 'number' &&
+        inventoryFormat[usedSource][item] !== 'number' &&
         !ExceptNumberProperty.includes(calculateType)
       ) {
         setCalculateType(NumberProperty[0]);
@@ -256,8 +291,8 @@ export default function ChartType({
   }
 
   function ViewAllData() {
-    if (!source) return null;
-    const inventoryKeys = Object.keys(inventory[source]);
+    if (!usedSource) return null;
+    const inventoryKeys = Object.keys(inventory[usedSource]);
     return (
       <div className={distyles.dataBox}>
         <div className={distyles.header}>header</div>
@@ -267,7 +302,7 @@ export default function ChartType({
             className={`${distyles.dataItem} ${item === selectData ? distyles.dataItemSelect : ''}`}
             onClick={() => setSelectData(item)}>
             <div>{item}</div>
-            <div>{inventoryFormat[source][item]}</div>
+            <div>{inventoryFormat[usedSource][item]}</div>
           </div>
         ))}
       </div>
@@ -439,8 +474,8 @@ export default function ChartType({
             <ViewAllData />
             <h5>집계 방식 선택</h5>
             {selectData &&
-            source &&
-            inventoryFormat[source][selectData] === 'number'
+            usedSource &&
+            inventoryFormat[usedSource][selectData] === 'number'
               ? NumberProperty.map(item => (
                   <div
                     key={item}
