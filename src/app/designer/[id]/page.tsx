@@ -8,6 +8,7 @@ import 'react-mosaic-component/react-mosaic-component.css';
 import { useMosaicStore } from '@/store/mosaicStore';
 import { useInventoryStore } from '@/store/inventoryStore';
 import { useSourceStore } from '@/store/sourceStore';
+import { useDashboardStore } from '@/store/dashboardStore';
 import Chart from './Chart';
 
 export default function Home() {
@@ -25,6 +26,7 @@ export default function Home() {
   const [chartViews, setChartViews] = useState<string[]>([]);
   const { setMosaicValue, setMosaicProperty, setMosaicPropertyDetail } =
     useMosaicStore();
+  const { unit, setUnit } = useDashboardStore();
   const [openModal, setOpenModal] = useState(false);
   const [modalNode, setModalNode] = useState<ReactNode>(null);
 
@@ -97,7 +99,22 @@ export default function Home() {
     if (item && item instanceof HTMLElement) {
       const type = item.dataset.type;
       setChartCnt(prev => prev + 1);
-      const newChartViews = [...chartViews, `${type}-${String(Date.now())}`];
+      const newChartId = `${type}-${String(Date.now())}`;
+      const newChartViews = [...chartViews, newChartId];
+      const prevUnit = JSON.parse(JSON.stringify(unit));
+      const newUnit: DashboardUnitType = {
+        type: 'chart',
+        title: newChartId,
+        unitInventory: {},
+        property: {},
+        filterId: [],
+        filterNum: {},
+        filterValue: {}
+      };
+      setUnit({
+        ...prevUnit,
+        [newChartId]: { ...newUnit }
+      });
       setChartViews(newChartViews);
       setMosaicValue(buildMosaicNode(newChartViews));
     }

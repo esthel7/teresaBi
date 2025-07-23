@@ -2,6 +2,7 @@
 
 import {
   Dispatch,
+  ChangeEvent,
   SetStateAction,
   MouseEvent,
   useState,
@@ -13,6 +14,7 @@ import { Mosaic, MosaicWindow, MosaicNode } from 'react-mosaic-component';
 import 'react-mosaic-component/react-mosaic-component.css';
 import { useMosaicStore } from '@/store/mosaicStore';
 import { useInventoryStore } from '@/store/inventoryStore';
+import { useDashboardStore } from '@/store/dashboardStore';
 import ChartType from './ChartType';
 import FinancialType from './FinancialType';
 import TextType from './TextType';
@@ -46,6 +48,7 @@ export default function Chart({
     setMosaicPropertyDetail
   } = useMosaicStore();
   const { inventory } = useInventoryStore();
+  const { unit, setUnit } = useDashboardStore();
   const [openDataProperty, setOpenDataProperty] = useState(false);
   const [openShareProperty, setOpenShareProperty] = useState(false);
   const chartBoxRef = useRef<HTMLDivElement>(null);
@@ -79,6 +82,9 @@ export default function Chart({
   }
 
   function removeMosaic(removeId: string) {
+    const prevUnit = JSON.parse(JSON.stringify(unit));
+    delete prevUnit[removeId];
+    setUnit(prevUnit);
     setChartCnt(prev => prev - 1);
     setChartViews(chartViews.filter(id => id !== removeId));
     setMosaicValue(removeMosaicNode(mosaicValue, removeId));
@@ -112,6 +118,13 @@ export default function Chart({
     e.stopPropagation();
   }
 
+  function changeTitle(e: ChangeEvent<HTMLInputElement>, id: string) {
+    e.stopPropagation();
+    const prevUnit = JSON.parse(JSON.stringify(unit));
+    prevUnit[id].title = e.target.value;
+    setUnit(prevUnit);
+  }
+
   return (
     <Mosaic<string>
       renderTile={(id, path) => (
@@ -124,7 +137,14 @@ export default function Chart({
             className={distyles.chart}
             ref={chartBoxRef}
             onClick={e => openProperty(e, id)}>
-            <div>{id.split('-')[0]}</div>
+            <div>
+              {id.split('-')[0]} / title:{' '}
+              <input
+                type="text"
+                value={unit[id]?.title ?? ''}
+                onChange={e => changeTitle(e, id)}
+                onClick={e => e.stopPropagation()} />
+            </div>
             <div
               className={distyles.connectData}
               onClick={e => openDataConnectSection(e, id)}>
