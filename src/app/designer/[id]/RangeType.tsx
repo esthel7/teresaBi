@@ -110,13 +110,15 @@ export default function RangeType({
     const format: Record<string, string | number | (string | number)[]>[] = [];
     const match: Record<string, number> = {};
     let cnt = 0;
-    const sortedOriginalDataSource = originalDataSource[source].sort((a, b) => {
-      return inventoryFormat[source][ykey] === 'number'
-        ? (a[inventory[source][ykey]] as number) -
-            (b[inventory[source][ykey]] as number)
-        : new Date(a[inventory[source][ykey]]).getTime() -
-            new Date(b[inventory[source][ykey]]).getTime();
-    });
+    const sortedOriginalDataSource = [...originalDataSource[source]].sort(
+      (a, b) => {
+        return inventoryFormat[source][ykey] === 'number'
+          ? (a[inventory[source][ykey]] as number) -
+              (b[inventory[source][ykey]] as number)
+          : new Date(a[inventory[source][ykey]]).getTime() -
+              new Date(b[inventory[source][ykey]]).getTime();
+      }
+    );
     sortedOriginalDataSource.forEach(item => {
       let formatIdx = 0;
       const keyword = item[inventory[source][xkey]];

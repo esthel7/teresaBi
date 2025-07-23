@@ -101,7 +101,7 @@ export default function FinancialType({
     const format: Record<string, string | number | (string | number)[]>[] = [];
     const match: Record<string, number> = {};
     let cnt = 0;
-    const sortedOriginalDataSource = originalDataSource[source].sort(
+    const sortedOriginalDataSource = [...originalDataSource[source]].sort(
       (a, b) =>
         new Date(a[inventory[source][datekey]]).getTime() -
         new Date(b[inventory[source][datekey]]).getTime()

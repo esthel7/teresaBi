@@ -29,10 +29,10 @@ export function calculate(flag: NumberPropertyType, arr: (number | string)[]) {
     case '중간값':
       if (Len === 0) return 0;
       if (Len === 1) return numArr[0];
-      const sorted = numArr.sort((a, b) => a - b);
+      numArr.sort((a, b) => a - b);
       return Len % 2 === 0
-        ? (sorted[Math.floor(Len / 2) - 1] + sorted[Math.floor(Len / 2)]) / 2
-        : sorted[Math.floor(Len / 2)];
+        ? (numArr[Math.floor(Len / 2) - 1] + numArr[Math.floor(Len / 2)]) / 2
+        : numArr[Math.floor(Len / 2)];
     case '최빈값':
       const freq: Record<number, number> = {};
       for (const num of numArr) {
