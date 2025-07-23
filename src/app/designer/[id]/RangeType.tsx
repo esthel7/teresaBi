@@ -249,6 +249,7 @@ export default function RangeType({
         alert('number 혹은 Date 형식만 가능합니다.');
         return;
       }
+      if (xInventory.length && xInventory[0][0] === item) return;
       // realname, alias
       setXInventory([[item, item]]);
     } else if (yDetail) {
@@ -257,9 +258,11 @@ export default function RangeType({
         inventoryFormat[source][item] !== 'number' &&
         !ExceptNumberProperty.includes(calculateType)
       ) {
-        setCalculateType(NumberProperty[0]);
+        if (calculateType !== NumberProperty[0])
+          setCalculateType(NumberProperty[0]);
         nowCalculateType = NumberProperty[0];
       }
+      if (yInventory.length && yInventory[0][0] === item) return;
       // realname, alias, drawType, calculateType
       setYInventory([[item, item, drawType, nowCalculateType]]);
     }
