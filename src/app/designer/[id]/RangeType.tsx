@@ -76,7 +76,7 @@ export default function RangeType({
     Record<string, string | number>[]>([]);
   const ExceptNumberProperty = ['카운트', '고유 카운트'];
   const rangeRef = useRef<RangeComponent>(null);
-  const [range, setRange] = useState<(number | Date)[]>([]);
+  const [range, setRange] = useState<(number | string)[]>([]);
 
   useEffect(() => {
     if (openDataProperty) return;
@@ -112,11 +112,11 @@ export default function RangeType({
     let cnt = 0;
     const sortedOriginalDataSource = [...originalDataSource[source]].sort(
       (a, b) => {
-        return inventoryFormat[source][ykey] === 'number'
-          ? (a[inventory[source][ykey]] as number) -
-              (b[inventory[source][ykey]] as number)
-          : new Date(a[inventory[source][ykey]]).getTime() -
-              new Date(b[inventory[source][ykey]]).getTime();
+        return inventoryFormat[source][xkey] === 'number'
+          ? (a[inventory[source][xkey]] as number) -
+              (b[inventory[source][xkey]] as number)
+          : new Date(a[inventory[source][xkey]]).getTime() -
+              new Date(b[inventory[source][xkey]]).getTime();
       }
     );
     sortedOriginalDataSource.forEach(item => {
@@ -281,6 +281,11 @@ export default function RangeType({
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function filterRange({ value }: { value: any[] }) {
+    setRange(value as (number | string)[]);
+  }
+
   return (
     <>
       {mosaicProperty === mosaicId && openDataProperty ? (
@@ -436,7 +441,7 @@ export default function RangeType({
             ref={rangeRef}
             dataSource={dataSource}
             value={range}
-            onValueChanged={e => setRange(e.value as (number | Date)[])}>
+            onValueChanged={filterRange}>
             <Scale
               startValue={dataSource[0][xInventory[0][0]]}
               endValue={dataSource[dataSource.length - 1][xInventory[0][0]]} />
