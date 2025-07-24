@@ -203,7 +203,7 @@ export default function RangeType({
       setRange([]);
       return;
     }
-    const parent = document.getElementById('chartBox');
+    const parent = document.getElementById(`chartBox ${mosaicId}`);
     if (!parent || !rangeRef.current) return;
     let timeout: ReturnType<typeof setTimeout> | null = null;
     const observer = new ResizeObserver(() => {
@@ -543,7 +543,7 @@ export default function RangeType({
         </div>
       ) : null}
 
-      <div id="chartBox" className={distyles.chartBox}>
+      <div id={`chartBox ${mosaicId}`} className={distyles.chartBox}>
         {dataSource.length ? (
           <RangeSelector
             id="chart"

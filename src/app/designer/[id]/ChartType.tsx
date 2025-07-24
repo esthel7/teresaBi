@@ -180,7 +180,7 @@ export default function ChartType({
       return;
     }
 
-    const parent = document.getElementById('chartBox');
+    const parent = document.getElementById(`chartBox ${mosaicId}`);
     if (!parent || !chartRef.current) return;
     let timeout: ReturnType<typeof setTimeout> | null = null;
     const observer = new ResizeObserver(() => {
@@ -612,7 +612,7 @@ export default function ChartType({
         </div>
       ) : null}
 
-      <div id="chartBox" className={distyles.chartBox}>
+      <div id={`chartBox ${mosaicId}`} className={distyles.chartBox}>
         {dataSource.length ? (
           <Chart
             id="chart"

@@ -157,7 +157,7 @@ export default function FinancialType({
       setUnit(prevUnit);
       return;
     }
-    const parent = document.getElementById('chartBox');
+    const parent = document.getElementById(`chartBox ${mosaicId}`);
     if (!parent || !chartRef.current) return;
     let timeout: ReturnType<typeof setTimeout> | null = null;
     const observer = new ResizeObserver(() => {
@@ -421,7 +421,7 @@ Low: ${arg.lowValue}<br/>`
         </div>
       ) : null}
 
-      <div id="chartBox" className={distyles.chartBox}>
+      <div id={`chartBox ${mosaicId}`} className={distyles.chartBox}>
         {dataSource.length ? (
           <Chart
             id="chart"
