@@ -29,6 +29,7 @@ import { useMosaicStore } from '@/store/mosaicStore';
 import { useInventoryStore } from '@/store/inventoryStore';
 import { useSourceStore } from '@/store/sourceStore';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { useFilterStore } from '@/store/filterStore';
 import distyles from './designerId.module.css';
 
 type NeededDataType = 'X' | 'Y' | 'Series';
@@ -73,6 +74,7 @@ export default function ChartType({
     useInventoryStore();
   const { source, setSource } = useSourceStore();
   const { unit, setUnit } = useDashboardStore();
+  const { filterList, setFilterList } = useFilterStore();
   // const [usedSource, setUsedSource] = useState<string>(''); // after process
   const [usedSource, setUsedSource] = useState<string>(source); // now process -> delete after
   const [xInventory, setXInventory] = useState<string[][]>([]);
@@ -102,6 +104,14 @@ export default function ChartType({
     setSelectData(null);
     setSelectDataIdx(-1);
   }, [openDataProperty]);
+
+  useEffect(() => {
+    if (filterList.includes(mosaicId)) {
+      makeDataSource();
+      setFilterList(filterList.filter(item => item !== mosaicId));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterList, mosaicId]);
 
   // now process -> delete after
   useEffect(() => {
@@ -157,11 +167,48 @@ export default function ChartType({
       return;
     }
     setUsedSource(source);
+    makeDataSource();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [xInventory, yInventory, seriesInventory]);
+
+  useEffect(() => {
+    if (!dataSource.length) {
+      const prevUnit = JSON.parse(JSON.stringify(unit));
+      prevUnit[mosaicId].source = source;
+      prevUnit[mosaicId].unitInventory = {};
+      setUnit(prevUnit);
+      return;
+    }
+
+    const parent = document.getElementById('chartBox');
+    if (!parent || !chartRef.current) return;
+    let timeout: ReturnType<typeof setTimeout> | null = null;
+    const observer = new ResizeObserver(() => {
+      if (timeout) clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        chartRef.current?.instance?.render();
+      }, 300); // render after 300ms from stoppipng resizing
+    });
+    observer.observe(parent);
+    return () => {
+      observer.disconnect();
+      if (timeout) clearTimeout(timeout);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataSource]);
+
+  function makeDataSource() {
+    const xkeys = [
+      ...seriesInventory.map(item => item[0]),
+      ...xInventory.map(item => item[0])
+    ];
+    const ykeys = yInventory.map(item => item[0]);
 
     const format: Record<string, string | number | (string | number)[]>[] = [];
     const match: Record<string, number> = {};
     let cnt = 0;
     originalDataSource[usedSource].forEach(item => {
+      if (isFiltered(item)) return;
       let formatIdx = 0;
       const keyword = xkeys
         .map(key => item[inventory[usedSource][key]])
@@ -202,33 +249,36 @@ export default function ChartType({
       seriesInventory: [...seriesInventory.map(item => [...item])]
     };
     setUnit(prevUnit);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [xInventory, yInventory, seriesInventory]);
+  }
 
-  useEffect(() => {
-    if (!dataSource.length) {
-      const prevUnit = JSON.parse(JSON.stringify(unit));
-      prevUnit[mosaicId].source = source;
-      prevUnit[mosaicId].unitInventory = {};
-      setUnit(prevUnit);
-      return;
+  function isFiltered(arr: (string | number)[]) {
+    for (let i = 0; i < unit[mosaicId].filterId.length; i++) {
+      const fid = unit[mosaicId].filterId[i];
+      const filterNumKeys = Object.keys(unit[fid].filterNum);
+      for (let j = 0; j < filterNumKeys.length; j++) {
+        const fkey = filterNumKeys[j];
+        const filterArr = unit[fid].filterNum[filterNumKeys[j]];
+        if (typeof filterArr[0] === 'number') {
+          const value = arr[inventory[usedSource][fkey]];
+          if (
+            filterArr[0] <= (value as number) &&
+            (value as number) <= (filterArr[1] as number)
+          )
+            continue;
+          return true;
+        } else {
+          const value = new Date(arr[inventory[usedSource][fkey]]).getTime();
+          if (
+            new Date(filterArr[0]).getTime() <= value &&
+            value <= new Date(filterArr[1]).getTime()
+          )
+            continue;
+          return true;
+        }
+      }
     }
-    const parent = document.getElementById('chartBox');
-    if (!parent || !chartRef.current) return;
-    let timeout: ReturnType<typeof setTimeout> | null = null;
-    const observer = new ResizeObserver(() => {
-      if (timeout) clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        chartRef.current?.instance?.render();
-      }, 300); // render after 300ms from stoppipng resizing
-    });
-    observer.observe(parent);
-    return () => {
-      observer.disconnect();
-      if (timeout) clearTimeout(timeout);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataSource]);
+    return false;
+  }
 
   function openDetailProperty(flag: NeededDataType) {
     setXDetail(false);

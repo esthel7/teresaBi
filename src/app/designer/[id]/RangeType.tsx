@@ -7,7 +7,8 @@ import {
   useEffect,
   RefObject,
   useRef,
-  MouseEvent
+  MouseEvent,
+  useCallback
 } from 'react';
 import RangeSelector, {
   RangeSelector as RangeComponent,
@@ -20,6 +21,7 @@ import { useMosaicStore } from '@/store/mosaicStore';
 import { useInventoryStore } from '@/store/inventoryStore';
 import { useSourceStore } from '@/store/sourceStore';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { useFilterStore } from '@/store/filterStore';
 import distyles from './designerId.module.css';
 import { calculate } from '@/utils/calculate';
 import { saveImg, saveExcel } from '@/utils/export';
@@ -61,6 +63,7 @@ export default function RangeType({
   const { inventory, inventoryFormat, originalDataSource } =
     useInventoryStore();
   const { source } = useSourceStore();
+  const { filterList, setFilterList } = useFilterStore();
   const { unit, setUnit } = useDashboardStore();
   const [xInventory, setXInventory] = useState<string[][]>([]);
   const [yInventory, setYInventory] = useState<string[][]>([]);
@@ -79,13 +82,16 @@ export default function RangeType({
   const ExceptNumberProperty = ['카운트', '고유 카운트'];
   const rangeRef = useRef<RangeComponent>(null);
   const [range, setRange] = useState<(number | string)[]>([]);
-
-  useEffect(() => {
-    const prevUnit = JSON.parse(JSON.stringify(unit));
-    prevUnit[mosaicId].type = 'filter';
-    setUnit(prevUnit);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [allChart, setAllChart] = useState<string[]>(
+    Object.keys(unit).filter(
+      item =>
+        unit[item].type === 'chart' &&
+        unit[item].source === unit[mosaicId].source
+    )
+  );
+  const [adjustChart, setAdjustChart] = useState<string[]>(
+    unit[mosaicId].filterId
+  );
 
   useEffect(() => {
     if (openDataProperty) return;
@@ -94,6 +100,19 @@ export default function RangeType({
     setSelectData(null);
     setSelectDataIdx(-1);
   }, [openDataProperty]);
+
+  // if change source of this range filter, reset filterId(related this filter) -> implement after
+
+  useEffect(() => {
+    setAllChart(
+      Object.keys(unit).filter(
+        item =>
+          unit[item].type === 'chart' &&
+          unit[item].source === unit[mosaicId].source
+      )
+    );
+    setAdjustChart(unit[mosaicId].filterId);
+  }, [unit, mosaicId]);
 
   useEffect(() => {
     if (!selectData) return;
@@ -321,6 +340,47 @@ export default function RangeType({
       [xkey]: [value[0] as number | string, value[1] as number | string]
     };
     setUnit(prevUnit);
+    setFilterList([...filterList, ...unit[mosaicId].filterId]);
+  }
+
+  const isAdjustFilter = useCallback(
+    (chartId: string) => {
+      return unit[mosaicId].filterId.includes(chartId);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [allChart, adjustChart]
+  );
+
+  function adjustFilter(chartId: string) {
+    if (isAdjustFilter(chartId)) return;
+    const prevUnit = JSON.parse(JSON.stringify(unit));
+    prevUnit[chartId].filterId.push(mosaicId);
+    prevUnit[mosaicId].filterId.push(chartId);
+    setUnit(prevUnit);
+    setFilterList([...filterList, chartId]);
+  }
+
+  const canAdjustFilter = useCallback(
+    (chartId: string) => {
+      if (isAdjustFilter(chartId)) return true;
+      return unit[chartId].filterId.every(item => unit[item].type !== 'range');
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [allChart, adjustChart]
+  );
+
+  function removeFilter(chartId: string) {
+    if (!isAdjustFilter(chartId)) return;
+    const prevUnit = JSON.parse(JSON.stringify(unit));
+    prevUnit[chartId].filterId = prevUnit[chartId].filterId.filter(
+      (item: string) => item !== mosaicId
+    );
+    prevUnit[mosaicId].filterId = prevUnit[mosaicId].filterId.filter(
+      (item: string) => item !== chartId
+    );
+    setUnit(prevUnit);
+    setAdjustChart(adjustChart.filter(item => item !== chartId));
+    setFilterList([...filterList, chartId]);
   }
 
   return (
@@ -373,6 +433,19 @@ export default function RangeType({
               onClick={() => openDetailProperty('Y')}>
               y축 추가
             </div>
+          </div>
+          <div className={distyles.propertySection}>
+            <h5>차트 적용</h5>
+            {allChart.map(uitem => (
+              <div
+                key={uitem}
+                className={`${distyles.drawType} ${isAdjustFilter(uitem) ? distyles.drawTypeSelect : ''}`}
+                style={{ background: canAdjustFilter(uitem) ? 'auto' : 'red' }}
+                onClick={() => adjustFilter(uitem)}>
+                <div>{unit[uitem].title}</div>
+                <div onClick={() => removeFilter(uitem)}>X</div>
+              </div>
+            ))}
           </div>
         </div>
       ) : null}
