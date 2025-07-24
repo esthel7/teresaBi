@@ -1,5 +1,5 @@
 interface DashboardUnitType {
-  type: 'chart' | 'filter' | 'none';
+  type: 'chart' | 'range' | 'combo' | 'list' | 'tree' | 'date' | 'none';
   title: string;
   unitInventory: { [key: string]: [] };
   property: { [key: string]: string | boolean }; // edit later

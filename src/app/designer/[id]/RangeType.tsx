@@ -177,6 +177,7 @@ export default function RangeType({
   useEffect(() => {
     if (!dataSource.length) {
       const prevUnit = JSON.parse(JSON.stringify(unit));
+      prevUnit[mosaicId].type = 'range';
       prevUnit[mosaicId].unitInventory = {};
       prevUnit[mosaicId].filterNum = {};
       setUnit(prevUnit);
