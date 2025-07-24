@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, useState, MouseEvent, ReactNode } from 'react';
+import { ChangeEvent, useState, MouseEvent } from 'react';
 import { MosaicNode } from 'react-mosaic-component';
 import * as XLSX from 'xlsx';
 import distyles from './designerId.module.css';
@@ -9,6 +9,7 @@ import { useMosaicStore } from '@/store/mosaicStore';
 import { useInventoryStore } from '@/store/inventoryStore';
 import { useSourceStore } from '@/store/sourceStore';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { useModalStore } from '@/store/modalStore';
 import Chart from './Chart';
 
 export default function Home() {
@@ -21,6 +22,7 @@ export default function Home() {
     setOriginalDataSource
   } = useInventoryStore();
   const { source, setSource } = useSourceStore();
+  const { modal } = useModalStore();
   const [dashboardTitle] = useState('새 대시보드');
   const [chartCnt, setChartCnt] = useState(0);
   const [chartViews, setChartViews] = useState<string[]>([]);
@@ -28,7 +30,6 @@ export default function Home() {
     useMosaicStore();
   const { unit, setUnit } = useDashboardStore();
   const [openModal, setOpenModal] = useState(false);
-  const [modalNode, setModalNode] = useState<ReactNode>(null);
 
   function formatCell(value: unknown) {
     if (!isNaN(Number(value)) && typeof value === 'string')
@@ -282,8 +283,7 @@ export default function Home() {
                     chartViews={chartViews}
                     setChartViews={setChartViews}
                     openModal={openModal}
-                    setOpenModal={setOpenModal}
-                    setModalNode={setModalNode} />
+                    setOpenModal={setOpenModal} />
                 </div>
               )}
             </div>
@@ -292,7 +292,7 @@ export default function Home() {
       </div>
       {openModal ? (
         <div className={distyles.modal} onClick={() => setOpenModal(false)}>
-          {modalNode}
+          {modal}
         </div>
       ) : null}
     </>

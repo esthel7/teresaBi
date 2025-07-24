@@ -7,7 +7,6 @@ import {
   MouseEvent,
   useState,
   useEffect,
-  ReactNode,
   useRef
 } from 'react';
 import { Mosaic, MosaicWindow, MosaicNode } from 'react-mosaic-component';
@@ -28,7 +27,6 @@ interface ChartParameter {
   setChartViews: Dispatch<SetStateAction<string[]>>;
   openModal: boolean;
   setOpenModal: Dispatch<SetStateAction<boolean>>;
-  setModalNode: Dispatch<SetStateAction<ReactNode>>;
 }
 
 export default function Chart({
@@ -36,8 +34,7 @@ export default function Chart({
   chartViews,
   setChartViews,
   openModal,
-  setOpenModal,
-  setModalNode
+  setOpenModal
 }: ChartParameter) {
   const {
     mosaicValue,
@@ -202,8 +199,7 @@ export default function Chart({
                 openDataProperty={openDataProperty}
                 setOpenDataProperty={setOpenDataProperty}
                 openModal={openModal}
-                setOpenModal={setOpenModal}
-                setModalNode={setModalNode} />
+                setOpenModal={setOpenModal} />
             ) : null}
             {id.split('-')[0] === 'img' ? (
               <ImgType
@@ -211,8 +207,7 @@ export default function Chart({
                 openDataProperty={openDataProperty}
                 setOpenDataProperty={setOpenDataProperty}
                 openModal={openModal}
-                setOpenModal={setOpenModal}
-                setModalNode={setModalNode} />
+                setOpenModal={setOpenModal} />
             ) : null}
             {id.split('-')[0] === 'range' ? (
               <RangeType

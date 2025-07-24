@@ -3,13 +3,13 @@
 import {
   Dispatch,
   SetStateAction,
-  ReactNode,
   ChangeEvent,
   useState,
   useEffect
 } from 'react';
 import { useMosaicStore } from '@/store/mosaicStore';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { useModalStore } from '@/store/modalStore';
 import distyles from './designerId.module.css';
 
 const ImgPosition = ['bottom', ' top', 'left', 'right', 'center'] as const;
@@ -20,7 +20,6 @@ interface ImgTypeParameter {
   setOpenDataProperty: Dispatch<SetStateAction<boolean>>;
   openModal: boolean;
   setOpenModal: Dispatch<SetStateAction<boolean>>;
-  setModalNode: Dispatch<SetStateAction<ReactNode>>;
 }
 
 export default function ImgType({
@@ -28,12 +27,11 @@ export default function ImgType({
   openDataProperty,
   setOpenDataProperty,
   openModal,
-  setOpenModal,
-  setModalNode
+  setOpenModal
 }: ImgTypeParameter) {
   const { mosaicProperty } = useMosaicStore();
   const { unit, setUnit } = useDashboardStore();
-  const [modalImg, setModalImg] = useState<string | null>(null);
+  const { callerId, setCallerId, setModal } = useModalStore();
   const [imgPosition, setImgPosition] =
     useState<(typeof ImgPosition)[number]>('center');
 
@@ -45,8 +43,50 @@ export default function ImgType({
   }, []);
 
   useEffect(() => {
-    if (!openModal) return;
-    setModalNode(
+    if (mosaicProperty === mosaicId) setCallerId(mosaicId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mosaicProperty, mosaicId]);
+
+  useEffect(() => {
+    if (!openModal || callerId !== mosaicId) return;
+    setModal(<ImgModal />);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openModal]);
+
+  function ImgModal() {
+    const [modalImg, setModalImg] = useState<string | null>(
+      typeof unit[mosaicId].property.receivedImg === 'string'
+        ? unit[mosaicId].property.receivedImg
+        : null
+    );
+
+    function handleImgFile(e: ChangeEvent<HTMLInputElement>) {
+      setModalImg(null);
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        setModalImg(reader.result as string);
+      };
+    }
+
+    function closeModal() {
+      setOpenModal(false);
+      setModalImg(null);
+    }
+
+    function confirmModal() {
+      setOpenModal(false);
+      if (modalImg) {
+        const prevUnit = JSON.parse(JSON.stringify(unit));
+        prevUnit[mosaicId].property.receivedImg = modalImg;
+        setUnit(prevUnit);
+      }
+    }
+
+    return (
       <div className={distyles.modalItem} onClick={e => e.stopPropagation()}>
         <div className={distyles.modalHeader}>
           <div>이미지</div>
@@ -68,33 +108,6 @@ export default function ImgType({
         </div>
       </div>
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openModal, modalImg]);
-
-  function handleImgFile(e: ChangeEvent<HTMLInputElement>) {
-    setModalImg(null);
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      setModalImg(reader.result as string);
-    };
-  }
-
-  function closeModal() {
-    setOpenModal(false);
-    setModalImg(null);
-  }
-
-  function confirmModal() {
-    setOpenModal(false);
-    if (modalImg) {
-      const prevUnit = JSON.parse(JSON.stringify(unit));
-      prevUnit[mosaicId].property.receivedImg = modalImg;
-      setUnit(prevUnit);
-    }
   }
 
   return (

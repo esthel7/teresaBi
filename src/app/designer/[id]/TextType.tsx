@@ -4,7 +4,6 @@ import {
   ChangeEvent,
   Dispatch,
   SetStateAction,
-  ReactNode,
   useEffect,
   useState
 } from 'react';
@@ -14,6 +13,7 @@ import TextEditor from './TextEditor';
 import 'react-quill-new/dist/quill.snow.css';
 import { useMosaicStore } from '@/store/mosaicStore';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { useModalStore } from '@/store/modalStore';
 import distyles from './designerId.module.css';
 
 interface TextTypeParameter {
@@ -22,7 +22,6 @@ interface TextTypeParameter {
   setOpenDataProperty: Dispatch<SetStateAction<boolean>>;
   openModal: boolean;
   setOpenModal: Dispatch<SetStateAction<boolean>>;
-  setModalNode: Dispatch<SetStateAction<ReactNode>>;
 }
 
 export default function TextType({
@@ -30,12 +29,11 @@ export default function TextType({
   openDataProperty,
   setOpenDataProperty,
   openModal,
-  setOpenModal,
-  setModalNode
+  setOpenModal
 }: TextTypeParameter) {
   const { mosaicProperty } = useMosaicStore();
   const { unit, setUnit } = useDashboardStore();
-  const [putText, setPutText] = useState<string>('');
+  const { callerId, setCallerId, setModal } = useModalStore();
 
   useEffect(() => {
     const prevUnit = JSON.parse(JSON.stringify(unit));
@@ -54,40 +52,57 @@ export default function TextType({
   }, []);
 
   useEffect(() => {
-    if (!openModal) return;
-    setModalNode(
+    if (mosaicProperty === mosaicId) setCallerId(mosaicId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mosaicProperty, mosaicId]);
+
+  useEffect(() => {
+    if (!openModal || callerId !== mosaicId) return;
+    setModal(<TextModal />);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openModal]);
+
+  function TextModal() {
+    const [putText, setPutText] = useState<string>(
+      typeof unit[mosaicId].property.writtenText === 'string'
+        ? unit[mosaicId].property.writtenText
+        : ''
+    );
+
+    async function handleWordFile(e: ChangeEvent<HTMLInputElement>) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const checkProgress = confirm(
+        '기존 내용이 지워집니다. 진행하시겠습니까?'
+      );
+      if (!checkProgress) return;
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.convertToHtml({ arrayBuffer });
+        setPutText(result.value.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;'));
+      } catch (error) {
+        console.error('Error reading .docx file:', error);
+        alert('파일을 읽는 중 오류가 발생했습니다.');
+      }
+    }
+
+    function confirmModal() {
+      const newWrittenText = DOMPurify.sanitize(putText, {
+        ALLOWED_ATTR: ['class', 'data-list', 'src', 'alt', 'width', 'height'] // maintain class, data-list
+      });
+      const prevUnit = JSON.parse(JSON.stringify(unit));
+      prevUnit[mosaicId].property.writtenText = newWrittenText;
+      setUnit(prevUnit);
+      setOpenModal(false);
+    }
+
+    return (
       <div className={distyles.modalItem} onClick={e => e.stopPropagation()}>
         <input type="file" accept=".docx" onChange={handleWordFile} />
         <TextEditor value={putText} setValue={setPutText} />
         <div onClick={confirmModal}>확인</div>
       </div>
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [openModal, putText]);
-
-  async function handleWordFile(e: ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const checkProgress = confirm('기존 내용이 지워집니다. 진행하시겠습니까?');
-    if (!checkProgress) return;
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const result = await mammoth.convertToHtml({ arrayBuffer });
-      setPutText(result.value.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;'));
-    } catch (error) {
-      console.error('Error reading .docx file:', error);
-      alert('파일을 읽는 중 오류가 발생했습니다.');
-    }
-  }
-
-  function confirmModal() {
-    const newWrittenText = DOMPurify.sanitize(putText, {
-      ALLOWED_ATTR: ['class', 'data-list', 'src', 'alt', 'width', 'height'] // maintain class, data-list
-    });
-    const prevUnit = JSON.parse(JSON.stringify(unit));
-    prevUnit[mosaicId].property.writtenText = newWrittenText;
-    setUnit(prevUnit);
-    setOpenModal(false);
   }
 
   return (
