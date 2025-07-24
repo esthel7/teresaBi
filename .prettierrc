@@ -6,5 +6,27 @@
   "bracketSpacing": true,
   "trailingComma": "none",
   "arrowParens": "avoid",
-  "endOfLine": "auto"
+  "endOfLine": "auto",
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
+  "importOrder": [
+    "^next",
+    "^next(.*)",
+    "^react",
+    "^react(.*)",
+    "<THIRD_PARTY_MODULES>",
+    "^@/hooks",
+    "^@/hooks/(.*)$",
+    "^@/utils",
+    "^@/utils/(.*)$",
+    "^@/store",
+    "^@/store/(.*)$",
+    "^@/components",
+    "^@/components/(.*)$",
+    "^@/app",
+    "^@/app/(.*)$",
+    "^@",
+    "^[./]"
+  ],
+  "importOrderSeparation": false,
+  "importOrderSortSpecifiers": true 
 }
