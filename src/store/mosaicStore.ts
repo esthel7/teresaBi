@@ -1,5 +1,5 @@
-import { create } from 'zustand';
 import { MosaicNode } from 'react-mosaic-component';
+import { create } from 'zustand';
 
 interface MosaicType {
   mosaicValue: MosaicNode<string> | null;

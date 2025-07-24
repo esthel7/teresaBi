@@ -1,24 +1,24 @@
 'use client';
 
 import {
-  Dispatch,
   ChangeEvent,
-  SetStateAction,
+  Dispatch,
   MouseEvent,
-  useState,
+  SetStateAction,
   useEffect,
-  useRef
+  useRef,
+  useState
 } from 'react';
-import { Mosaic, MosaicWindow, MosaicNode } from 'react-mosaic-component';
+import { Mosaic, MosaicNode, MosaicWindow } from 'react-mosaic-component';
 import 'react-mosaic-component/react-mosaic-component.css';
-import { useMosaicStore } from '@/store/mosaicStore';
-import { useInventoryStore } from '@/store/inventoryStore';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { useInventoryStore } from '@/store/inventoryStore';
+import { useMosaicStore } from '@/store/mosaicStore';
 import ChartType from './ChartType';
 import FinancialType from './FinancialType';
-import TextType from './TextType';
 import ImgType from './ImgType';
 import RangeType from './RangeType';
+import TextType from './TextType';
 import distyles from './designerId.module.css';
 
 interface ChartParameter {

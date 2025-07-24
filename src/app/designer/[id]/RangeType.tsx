@@ -2,32 +2,32 @@
 
 import {
   Dispatch,
-  SetStateAction,
-  useState,
-  useEffect,
-  RefObject,
-  useRef,
   MouseEvent,
-  useCallback
+  RefObject,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
 } from 'react';
 import RangeSelector, {
-  RangeSelector as RangeComponent,
   Chart,
   CommonSeriesSettings,
-  Series,
-  Scale
+  RangeSelector as RangeComponent,
+  Scale,
+  Series
 } from 'devextreme-react/range-selector';
-import { useMosaicStore } from '@/store/mosaicStore';
-import { useInventoryStore } from '@/store/inventoryStore';
-import { useSourceStore } from '@/store/sourceStore';
+import 'devextreme/dist/css/dx.light.css';
+import { calculate } from '@/utils/calculate';
+import { saveExcel, saveImg } from '@/utils/export';
+import { isSameSource } from '@/utils/isSameSource';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { useFilterStore } from '@/store/filterStore';
-import distyles from './designerId.module.css';
-import { calculate } from '@/utils/calculate';
-import { saveImg, saveExcel } from '@/utils/export';
-import { isSameSource } from '@/utils/isSameSource';
+import { useInventoryStore } from '@/store/inventoryStore';
+import { useMosaicStore } from '@/store/mosaicStore';
+import { useSourceStore } from '@/store/sourceStore';
 import { NumberProperty, NumberPropertyType } from '@/constants';
-import 'devextreme/dist/css/dx.light.css';
+import distyles from './designerId.module.css';
 
 type NeededDataType = 'X' | 'Y';
 const DrawType = [

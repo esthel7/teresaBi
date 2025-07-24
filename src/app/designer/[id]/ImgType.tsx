@@ -1,15 +1,15 @@
 'use client';
 
 import {
+  ChangeEvent,
   Dispatch,
   SetStateAction,
-  ChangeEvent,
-  useState,
-  useEffect
+  useEffect,
+  useState
 } from 'react';
-import { useMosaicStore } from '@/store/mosaicStore';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { useModalStore } from '@/store/modalStore';
+import { useMosaicStore } from '@/store/mosaicStore';
 import distyles from './designerId.module.css';
 
 const ImgPosition = ['bottom', ' top', 'left', 'right', 'center'] as const;

@@ -7,5 +7,5 @@ interface SourceType {
 
 export const useSourceStore = create<SourceType>(set => ({
   source: '',
-  setSource: source => set({ source }),
+  setSource: source => set({ source })
 }));

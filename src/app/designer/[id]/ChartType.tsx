@@ -2,12 +2,12 @@
 
 import {
   Dispatch,
-  SetStateAction,
-  useState,
-  useEffect,
+  MouseEvent,
   RefObject,
+  SetStateAction,
+  useEffect,
   useRef,
-  MouseEvent
+  useState
 } from 'react';
 import {
   ArgumentAxis,
@@ -21,15 +21,15 @@ import {
   Tooltip,
   ZoomAndPan
 } from 'devextreme-react/chart';
-import { NumberProperty, NumberPropertyType } from '@/constants';
 import { calculate } from '@/utils/calculate';
-import { saveImg, saveExcel } from '@/utils/export';
+import { saveExcel, saveImg } from '@/utils/export';
 import { isSameSource } from '@/utils/isSameSource';
-import { useMosaicStore } from '@/store/mosaicStore';
-import { useInventoryStore } from '@/store/inventoryStore';
-import { useSourceStore } from '@/store/sourceStore';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { useFilterStore } from '@/store/filterStore';
+import { useInventoryStore } from '@/store/inventoryStore';
+import { useMosaicStore } from '@/store/mosaicStore';
+import { useSourceStore } from '@/store/sourceStore';
+import { NumberProperty, NumberPropertyType } from '@/constants';
 import distyles from './designerId.module.css';
 
 type NeededDataType = 'X' | 'Y' | 'Series';

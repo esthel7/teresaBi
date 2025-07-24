@@ -1,16 +1,16 @@
 'use client';
 
-import { ChangeEvent, useState, MouseEvent } from 'react';
+import { ChangeEvent, MouseEvent, useState } from 'react';
 import { MosaicNode } from 'react-mosaic-component';
-import * as XLSX from 'xlsx';
-import distyles from './designerId.module.css';
 import 'react-mosaic-component/react-mosaic-component.css';
-import { useMosaicStore } from '@/store/mosaicStore';
-import { useInventoryStore } from '@/store/inventoryStore';
-import { useSourceStore } from '@/store/sourceStore';
+import * as XLSX from 'xlsx';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { useInventoryStore } from '@/store/inventoryStore';
 import { useModalStore } from '@/store/modalStore';
+import { useMosaicStore } from '@/store/mosaicStore';
+import { useSourceStore } from '@/store/sourceStore';
 import Chart from './Chart';
+import distyles from './designerId.module.css';
 
 export default function Home() {
   const {

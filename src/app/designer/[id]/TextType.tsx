@@ -7,13 +7,13 @@ import {
   useEffect,
   useState
 } from 'react';
+import 'react-quill-new/dist/quill.snow.css';
 import DOMPurify from 'dompurify';
 import mammoth from 'mammoth';
-import TextEditor from './TextEditor';
-import 'react-quill-new/dist/quill.snow.css';
-import { useMosaicStore } from '@/store/mosaicStore';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { useModalStore } from '@/store/modalStore';
+import { useMosaicStore } from '@/store/mosaicStore';
+import TextEditor from './TextEditor';
 import distyles from './designerId.module.css';
 
 interface TextTypeParameter {

@@ -2,35 +2,35 @@
 
 import {
   Dispatch,
-  SetStateAction,
-  useState,
-  useEffect,
+  MouseEvent,
   RefObject,
+  SetStateAction,
+  useEffect,
   useRef,
-  MouseEvent
+  useState
 } from 'react';
 import {
+  ArgumentAxis,
   Chart,
   Chart as ChartComponent,
   CommonSeriesSettings,
-  Series,
-  Reduction,
-  ArgumentAxis,
-  Label,
-  Format,
-  ValueAxis,
-  Title,
   Export,
-  Tooltip
+  Format,
+  Label,
+  Reduction,
+  Series,
+  Title,
+  Tooltip,
+  ValueAxis
 } from 'devextreme-react/chart';
-import { DateProperty, DatePropertyType } from '@/constants';
 import { dateFormat } from '@/utils/dateFormat';
-import { saveImg, saveExcel } from '@/utils/export';
+import { saveExcel, saveImg } from '@/utils/export';
 import { isSameSource } from '@/utils/isSameSource';
-import { useMosaicStore } from '@/store/mosaicStore';
-import { useInventoryStore } from '@/store/inventoryStore';
-import { useSourceStore } from '@/store/sourceStore';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { useInventoryStore } from '@/store/inventoryStore';
+import { useMosaicStore } from '@/store/mosaicStore';
+import { useSourceStore } from '@/store/sourceStore';
+import { DateProperty, DatePropertyType } from '@/constants';
 import distyles from './designerId.module.css';
 
 type NeededDataType = 'Date' | 'Value';

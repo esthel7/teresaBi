@@ -1,8 +1,8 @@
+import { RefObject } from 'react';
+import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
-import { RefObject } from 'react';
 
 export async function saveImg(
   chartBoxRef: RefObject<HTMLDivElement | null>,
