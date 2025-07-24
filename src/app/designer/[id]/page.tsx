@@ -84,6 +84,7 @@ export default function Home() {
         ...originalDataSource,
         [fileName]: [...refined.map(item => [...item])]
       });
+      if (!Object.keys(inventory).length) setSource(fileName);
       console.log('check original data', {
         ...originalDataSource,
         [fileName]: [...refined.map(item => [...item])]
@@ -106,6 +107,7 @@ export default function Home() {
       const newUnit: DashboardUnitType = {
         type: 'chart',
         title: newChartId,
+        source: source,
         unitInventory: {},
         property: {},
         filterId: [],

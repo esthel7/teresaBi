@@ -1,6 +1,7 @@
 interface DashboardUnitType {
   type: 'chart' | 'range' | 'combo' | 'list' | 'tree' | 'date' | 'none';
   title: string;
+  source: string;
   unitInventory: { [key: string]: [] };
   property: { [key: string]: string | boolean }; // edit later
   filterId: string[];

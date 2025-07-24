@@ -208,6 +208,7 @@ export default function ChartType({
   useEffect(() => {
     if (!dataSource.length) {
       const prevUnit = JSON.parse(JSON.stringify(unit));
+      prevUnit[mosaicId].source = source;
       prevUnit[mosaicId].unitInventory = {};
       setUnit(prevUnit);
       return;
